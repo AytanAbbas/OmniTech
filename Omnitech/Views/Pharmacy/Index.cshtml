@@ -1,0 +1,279 @@
+﻿@using Omnitech.Dtos
+@using Omnitech.Models
+@model PharmacyInvoiceDto
+@{
+    ViewData["Title"] = "Index";
+}
+<link rel="stylesheet" href="~/css/modal.css" />
+
+<h2 id="title">Fakturalar</h2>
+
+<input type="date" id="pharmacyStartDate">
+<span id="symbol">>></span>
+<input type="date" id="pharmacyEndDate">
+<input type="button" value="axtar" id="btnPharmacySearch" />
+
+<div id="pharmacyInvoiceInfos">
+    <partial name="_PharmacyInvoiceInfoPartial" />
+</div>
+
+<div class="menu-modal" id="modal">
+    <div style="display:block; text-align:right;">
+        <span id="btn_close" class="close-button"> &times;</span>
+    </div>
+
+    <div class="col-12">
+        <div class="row">
+            <div class="col-6">
+                <div class="row">
+                    <div class="result col-3">
+                        <button id="btnReplacePharmacyInvoiceItem" class="btn btn-primary col-12" style=" background-color: #337ab7;">Formalaşdır</button>
+                    </div>
+                    <div id="pharmacyInvoiceItemReplace" style="position: relative;margin-top: -7%;margin-left: 25%;">
+                        <partial name="_PharmacyInvoiceItemReplacePartial" />
+                    </div>
+                    <div style="position: relative;bottom: 140px;left: 100%;">
+                        <span style="border: 1px solid transparent;padding: 12px 14px;background-color: #337ab7;color: white;line-height: 3.2;"> Faktura məbləği:</span>
+                        <span id="totalSum" style="position:relative;top: 73px;left: -48%;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label>Qida əlavəsi: </label>
+        <select id="food_supplement_item_select">
+            @foreach (var foodItem in Model.FoodSupplementItems)
+            {
+                <option value="@foodItem.Logicalref" data-price="@foodItem.Price"> @foodItem.Logicalref / @foodItem.Code / @foodItem.Name - Qiyməti: @foodItem.Price</option>
+            }
+        </select>
+        <input id="fooditem_count" type="number" style="width: 5%;" value="1" placeholder="Sayı" min="1" />
+        <button id="btn_add" class="btn btn-primary col-12" style=" width: 150px;display: inline-block;background-color: #337ab7 !important;border-color: #337ab7;">
+            Əlavə et
+        </button>
+    </div>
+
+    <div id="pharmacyInvoiceDetails">
+        <partial name="_PharmacyInvoiceDetailPartial" />
+    </div>
+    <div class="print">
+        <label style="margin-left: 20px; margin-right: 10px;position: relative;top: 30px;">Sətir sayı :</label>
+        <input id="resept_count" type="text" value="10" style="    width: 45px;position: relative;top: 30px;right: 11px;">
+        <button id="btnPrint" class="btn btn-primary col-12">Cap et</button>
+    </div>
+</div>
+
+<div id="overlay" class=""></div>
+
+<script>
+    let btnPharmacySearch = document.getElementById("btnPharmacySearch");
+    let overlay = document.getElementById("overlay");
+    let modall = document.getElementById("modal");
+    let btn_close = document.getElementById("btn_close");
+    let btnReplacePharmacyInvoiceItem = document.getElementById("btnReplacePharmacyInvoiceItem");
+    let food_supplement_item_select = document.getElementById("food_supplement_item_select");
+
+    let selectedPharmacyInvoiceInfo;
+
+    let currentDate = new Date().toISOString().slice(0, 10)
+    document.getElementById("pharmacyStartDate").value = currentDate;
+    document.getElementById("pharmacyEndDate").value = currentDate;
+
+    btnPharmacySearch.addEventListener("click", getPharmacyInvoiceInfos);
+    btnReplacePharmacyInvoiceItem.addEventListener("click", replacePharmacyInvoiceItem);
+    document.getElementById("btn_add").addEventListener("click", addFoodSupplementItem);
+    document.getElementById("btnPrint").addEventListener("click", printInvoice);
+
+    hideInvoiceDetailModal(btn_close);
+    hideInvoiceDetailModal(overlay);
+
+    function getPharmacyInvoiceInfos() {
+
+        let pharmacyStartDate = document.getElementById("pharmacyStartDate");
+        let pharmacyEndDate = document.getElementById("pharmacyEndDate");
+
+        $.ajax({
+            url: "/Pharmacy/GetByStartDateAndEndDate",
+            method: "GET",
+            data: { startDate: pharmacyStartDate.value, endDate: pharmacyEndDate.value },
+            success: function (res) {
+                if (res.status == 500) {
+                    alert(res.responseText);
+                }
+
+                else
+                    $("#pharmacyInvoiceInfos").html(res);
+
+            },
+            error: function (res) {
+                alert(res.responseText);
+            }
+        });
+    }
+
+    function pharmacy_inv_info_selection_changed(selectedItems) {
+        selectedPharmacyInvoiceInfo = selectedItems.selectedRowsData;
+    }
+
+    function selectPharmacyInvoiceInfo(e) {
+        if (!e.itemData.PharmacyInvoiceInfos) {
+            let sourceIndex = selectedPharmacyInvoiceInfo[0].ANBAR;
+            let date = selectedPharmacyInvoiceInfo[0].TARIX;
+            let totalSum = selectedPharmacyInvoiceInfo[0].CEMI_MEBLEG_IADE_CIXILMIS;
+            getPharmacyInvoiceDetailsBySourceIndexAndDate(sourceIndex, date);
+
+            document.getElementById("totalSum").innerHTML = totalSum;
+        }
+    }
+
+    function getPharmacyInvoiceDetailsBySourceIndexAndDate(sourceIndex, date) {
+        $.ajax({
+            url: "/Pharmacy/GetPharmacyInvoiceDetailsBySourceIndexAndDate",
+            method: "GET",
+            data: { sourceIndex: sourceIndex, date: date.toLocaleDateString() },
+            success: function (res) {
+                if (res.status == 500) {
+                    alert(res.responseText);
+                }
+
+                else {
+                    $("#pharmacyInvoiceDetails").html(res);
+                    getPharmacyInvoiceReplacedItemSum(sourceIndex, date.toLocaleDateString());
+                    showInvoiceDetailModal();
+                    changeColor();
+                }
+            },
+            error: function (res) {
+                alert(res.responseText);
+            }
+        });
+    }
+
+    function showInvoiceDetailModal() {
+        modall.classList.add("active");
+        overlay.classList.add("active");
+
+        document.getElementById("fooditem_count").value = 1;
+    }
+
+    function hideInvoiceDetailModal(btn) {
+        btn.addEventListener("click", function () {
+            overlay.classList.remove("active")
+            modall.classList.remove("active")
+            getPharmacyInvoiceInfos();
+        });
+    }
+
+    function replacePharmacyInvoiceItem() {
+        let sourceIndex = selectedPharmacyInvoiceInfo[0].ANBAR;
+        let date = selectedPharmacyInvoiceInfo[0].TARIX;
+        const date2 = date;
+        const options = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' };
+
+        $.ajax({
+            url: "/Pharmacy/ReplacePharmacyInvoiceItem",
+            method: "GET",
+            data: { sourceIndex: sourceIndex, date: date.toLocaleDateString(undefined, options) },
+            success: function (res) {
+                if (res.status == 500) {
+                    alert(res.responseText);
+                }
+
+                else {
+
+                    $("#pharmacyInvoiceItemReplace").html(res);
+                    getPharmacyInvoiceDetailsBySourceIndexAndDate(sourceIndex, date);
+                    showInvoiceDetailModal();
+                    changeColor();
+                }
+            },
+            error: function (res) {
+                alert(res.responseText);
+            }
+        });
+    }
+
+    function getPharmacyInvoiceReplacedItemSum(sourceIndex, date) {
+        $.ajax({
+            url: "/Pharmacy/GetPharmacyInvoiceReplacedItemSum",
+            method: "GET",
+            data: { sourceIndex: sourceIndex, date: date },
+            success: function (res) {
+                if (res.status == 500) {
+                    alert(res.responseText);
+                }
+
+                else {
+                    $("#pharmacyInvoiceItemReplace").html(res);
+                }
+            },
+            error: function (res) {
+                alert(res.responseText);
+            }
+        });
+    }
+
+    function addFoodSupplementItem() {
+
+        let fooditemCount = document.getElementById("fooditem_count").value;
+        let selectedFoodItemRef = document.getElementById("food_supplement_item_select").value;
+        let tarix = selectedPharmacyInvoiceInfo[0].TARIX.toLocaleDateString();
+        let anbar = selectedPharmacyInvoiceInfo[0].ANBAR;
+
+
+        $.ajax({
+            url: "/Pharmacy/AddFoodSupplementItem",
+            method: "GET",
+            data: { sku: selectedFoodItemRef, date: tarix, sourceIndex: anbar, quantity: fooditemCount },
+            success: function (res) {
+                if (res.status == 500) {
+                    alert(res.responseText);
+                }
+
+                else {
+                    $("#pharmacyInvoiceDetails").html(res);
+                    getPharmacyInvoiceReplacedItemSum(anbar, tarix);
+                    showInvoiceDetailModal();
+                }
+            },
+            error: function (res) {
+                alert(res.response);
+            }
+        });
+    } 
+
+    function printInvoice() {
+        let invName = selectedPharmacyInvoiceInfo[0].FAKTURA;
+        let sourceIndex = selectedPharmacyInvoiceInfo[0].ANBAR;
+        let reseptCount = document.getElementById("resept_count");
+        let date = selectedPharmacyInvoiceInfo[0].TARIX;
+
+        $.ajax({
+            url: "/PharmacyInvoicePrint/Index",
+            method: "GET",
+            data: { fakturaName: invName, anbar: sourceIndex, date: date.toLocaleDateString(), reseptCount: reseptCount.value },
+            success: function (res) {
+                if (res.status == 500) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: res.responseText,
+                    });
+                    //  alert(res.responseText);
+                }
+                else {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.responseText,
+                    });
+                }
+            },
+            error: function (res) {
+
+                alert(res.responseText);
+            }
+        });
+    }
+
+</script>

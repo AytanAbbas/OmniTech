@@ -1,0 +1,53 @@
+﻿@using Omnitech.Dtos
+@using Omnitech.Models
+@model KNInvoiceDto
+
+@(
+Html.DevExtreme().DataGrid<KNInvoiceDetail>()
+    .ShowBorders(true)
+    .ID("knInvoiceDetailDataContainer")
+    .DataSource(Model.KNInvoiceDetails, new[] { "ID" })
+    .DataSource(Model.KNInvoiceDetails)
+    .HoverStateEnabled(true)
+    .ShowBorders(true)
+    .Columns(columns =>
+        {
+            columns.AddFor(m => m.LOGICALREF).HeaderCellTemplate("LOGICALREF");
+            columns.AddFor(m => m.SKU).HeaderCellTemplate("Sku");
+            columns.AddFor(m => m.TARIX).HeaderCellTemplate("TARIX");
+            columns.AddFor(m => m.MIQDAR).HeaderCellTemplate("MIQDAR");
+            columns.AddFor(m => m.MEBLEG).HeaderCellTemplate("MEBLEG");
+            columns.AddFor(m => m.CLIENT).HeaderCellTemplate("CLIENT");
+            columns.AddFor(m => m.MEHSULUN_KODU).HeaderCellTemplate("MEHSULUN_KODU");
+            columns.AddFor(m => m.MEHSULUN_ADI).HeaderCellTemplate("MEHSULUN_ADI");
+            columns.AddFor(m => m.ISTEHSALCHI).HeaderCellTemplate("ISTEHSALCHI");
+            columns.AddFor(m => m.BARCODE).HeaderCellTemplate("BARCODE");
+            columns.AddFor(m => m.VAHID).HeaderCellTemplate("VAHID");
+            columns.AddFor(m => m.EDEDSAYI).HeaderCellTemplate("EDEDSAYI");
+            columns.AddFor(m => m.FIRMA).HeaderCellTemplate("FIRMA");
+            //columns.AddFor(m => m.DELETED).AllowHiding(true);
+        })
+    .Selection(s => s.Mode(SelectionMode.Single))
+    .AllowColumnResizing(true)
+    .Paging(p => p.PageSize(1000))
+    .Pager(x=>x.Option("foo", x))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+   .Summary(s => s
+         .TotalItems(totalItems =>
+         {
+             totalItems.AddFor(m => m.MEBLEG).SummaryType(SummaryType.Sum).DisplayFormat("Cəm: {0}");
+             totalItems.AddFor(m => m.LOGICALREF).SummaryType(SummaryType.Count).DisplayFormat("Cəm: {0}");
+             
+         })
+     )
+)
+
+
+
+<input id="printed_amount_from_db" type="hidden" disabled value="@ViewBag.PrintedAmount" />
+<input id="difference_from_db" type="hidden" disabled value="@ViewBag.Difference" />
+
+

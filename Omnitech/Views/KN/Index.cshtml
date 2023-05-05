@@ -1,0 +1,248 @@
+﻿@using Omnitech.Dtos
+@using Omnitech.Models
+@model KNInvoiceDto
+@{
+    ViewData["Title"] = "Index";
+}
+<link rel="stylesheet" href="~/css/modal.css" />
+<link rel="stylesheet" href="~/css/Site.css" />
+
+<h2 id="title">Fakturalar</h2>
+
+<input type="date" id="knStartDate" style=" color: #337ab7;">
+<span id="symbol">>></span>
+<input type="date" id="knEndDate" style=" color: #337ab7;">
+<input type="button" value="axtar" id="btnKNSearch" style="color: white ;background: #337ab7;border: #337ab7;width: 6%;height: 30px;font-weight: bold;" />
+
+
+<div id="knInvoiceInfos">
+    <partial name="_KNInvoiceInfoPartial" />
+</div>
+
+
+<div class="menu-modal" id="modal">
+    <div style="display:block; text-align:right;">
+        <span id="btn_close" class="close-button"> &times;</span>
+    </div>
+    <div>
+        <label for="fname"> Çap ediləcək məbləğ:</label>
+        <input id="sum_for_print" style="width:7%;   margin-right: 5%;" />
+        <label for="fname"> Faktura məbləği:</label>
+        <input id="invAmount" style="width:7%;   margin-right: 5%;" disabled />
+        <label for="fname">Çap edilmiş məbləğ:</label>
+        <input id="printedAmount" style="width:7%;  margin-right: 5%;" disabled />
+        <label for="fname"> Fərq:</label>
+        <input id="difference" style="width:7%; margin-right: 3%;" disabled />
+        <button id="confirm" class="btn btn-primary " style="background-color: #337ab7 !important;border-color: #337ab7;}">
+            Təsdiqlə
+        </button>
+    </div>
+    <div id="knInvoiceDetails">
+        <partial name="_KNInvoiceDetailPartial" />
+    </div>
+    <div class="print">
+        <label style="margin-left: 20px; margin-right: 10px;position: relative;top: 30px;">Sətir sayı :</label>
+        <input id="resept_count" type="text" value="10" style="    width: 45px;position: relative;top: 30px;right: 11px;">
+        <button id="btnPrint" class="btn btn-primary col-12">Cap et</button>
+    </div>
+</div>
+
+<div id="overlay" class=""></div>
+
+
+
+<script>
+  
+    
+
+
+
+    let selectedKNInvoiceInfo;
+
+    let overlay = document.getElementById("overlay");
+    let modall = document.getElementById("modal");
+    let btnKNSearch = document.getElementById("btnKNSearch");
+    let btnPrint = document.getElementById("btnPrint");
+
+    let btn_close = document.getElementById("btn_close");
+    let btnConfirm = document.getElementById("confirm");
+    let knInvoiceDetails = document.getElementById("knInvoiceDetails");
+    let invAmount_ = document.getElementById("invAmount");
+    let printedAmount_ = document.getElementById("printedAmount");
+    let difference_ = document.getElementById("difference");
+    let sum_for_print = document.getElementById("sum_for_print");
+
+
+    let currentDate = new Date().toISOString().slice(0, 10)
+    document.getElementById("knStartDate").value = currentDate;
+    document.getElementById("knEndDate").value = currentDate;
+    btnKNSearch.addEventListener("click", getKnInvoiceInfos);
+
+    btnConfirm.addEventListener("click", function () {
+        let invId = selectedKNInvoiceInfo[0].INV_ID;
+        let invAmount = document.getElementById("sum_for_print").value;
+        let printedAmount = selectedKNInvoiceInfo[0].CAP_EDILMIS_MEBLEG;
+        //let difference = invAmount - printedAmount
+        getKNInvoiceDetailsByInvIdAndMebleg(invId, invAmount, difference_.value);
+    });
+
+    btnPrint.addEventListener("click", function () {
+        let invId = selectedKNInvoiceInfo[0].INV_ID;
+        let invAmount = document.getElementById("sum_for_print").value;
+        let faktura = selectedKNInvoiceInfo[0].FAKTURANO;
+        let difference = difference_.value
+
+        printKNInvoiceDetails(invId, invAmount, difference, faktura);
+  
+
+
+    });
+
+    hideInvoiceDetailModal(btn_close);
+    hideInvoiceDetailModal(overlay);
+
+
+    function getKnInvoiceInfos() {
+
+        let knStartDate = document.getElementById("knStartDate");
+        let knEndDate = document.getElementById("knEndDate");
+
+        $.ajax({
+            url: "/KN/GetByStartDateAndEndDate",
+            method: "GET",
+            data: { startDate: knStartDate.value, endDate: knEndDate.value },
+            success: function (res) {
+                if (res.status == 500) {
+                    alert(res.responseText);
+                }
+
+                else
+                    $("#knInvoiceInfos").html(res);
+
+            },
+            error: function (res) {
+                alert(res.responseText);
+            }
+        });
+    }
+
+    function kn_inv_info_selection_changed(selectedItems) {
+        selectedKNInvoiceInfo = selectedItems.selectedRowsData;
+    }
+
+    function selectKNInvoiceInfo(e) {
+        if (!e.itemData.KNInvoiceInfos) {
+            let invId = selectedKNInvoiceInfo[0].INV_ID;
+            let invAmount = selectedKNInvoiceInfo[0].FAKTURA_MEBLEGI;
+            let printedAmount = selectedKNInvoiceInfo[0].CAP_EDILMIS_MEBLEG.toFixed(6);
+            let difference = (invAmount - printedAmount).toFixed(6);
+            sum_for_print.value = difference;
+
+            invAmount_.value = invAmount;
+            printedAmount_.value = printedAmount;
+            difference_.value = difference;
+
+            if (invAmount == printedAmount) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Bu qəbz artıq kassaya göndərilib',
+                    });
+            }
+
+            else{
+            getKNInvoiceDetailsByInvIdAndMebleg(invId, printedAmount, difference);
+            //knInvoiceDetails.style.display = "none";
+            showInvoiceDetailModal();
+            }
+           
+
+        }
+    }
+
+    function printKNInvoiceDetails(invId, invTotalSum, difference, faktura) {
+
+
+        $.ajax({
+            url: "/KNInvoicePrint/Index",
+            method: "GET",
+            data: { invId: invId, mebleg: invTotalSum, difference: difference, faktura: faktura },
+            success: function (res) {
+                if (res.status == 500) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: res.responseText,
+                    });
+                  //  alert(res.responseText);
+                }
+
+                else {
+                    $("#knInvoiceDetails").html(res);
+
+                    printedAmount_.value = document.getElementById("printed_amount_from_db").value;
+                    difference_.value = document.getElementById("difference_from_db").value;
+                    sum_for_print.value = 0;
+
+                    knInvoiceDetails.style.display = "block";
+
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.responseText,
+                    });
+
+                }
+            },
+            error: function (res) {
+                alert(res.responseText);
+            }
+        });
+
+
+    }
+
+    function getKNInvoiceDetailsByInvIdAndMebleg(invId, mebleg, difference) {
+
+
+
+        $.ajax({
+            url: "/KN/GetKNInvoiceDetailsByInvIdAndMebleg",
+            method: "GET",
+            data: { invId: invId, mebleg: sum_for_print.value, difference: difference },
+            success: function (res) {
+                if (res.status == 500) {
+                    alert(res.responseText);
+                }
+
+                else {
+                    $("#knInvoiceDetails").html(res);
+                    knInvoiceDetails.style.display = "block";
+                }
+            },
+            error: function (res) {
+                alert(res.responseText);
+            }
+        });
+
+    }
+
+
+    function showInvoiceDetailModal() {
+        modall.classList.add("active");
+        overlay.classList.add("active");
+
+    }
+
+    function hideInvoiceDetailModal(btn) {
+        btn.addEventListener("click", function () {
+            overlay.classList.remove("active")
+            modall.classList.remove("active")
+            getKnInvoiceInfos();
+          
+        });
+
+    }
+
+
+
+</script>
+

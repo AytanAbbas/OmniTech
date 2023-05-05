@@ -1,0 +1,34 @@
+﻿@using Omnitech.Dtos
+@using Omnitech.Models
+@model PharmacyInvoiceDto
+
+<div class="col-9">
+    <table class="table tbl-bordered">
+        <thead style="background-color: #337ab7;color: white;">
+            <tr>
+                <th>SİLİNƏN</th>
+                <th>ƏVƏZLƏNƏN</th>
+                <th>FƏRQ</th>
+                <th>ƏLAVƏ EDİLƏN</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                @try
+                {
+                    <td>@decimal.Round(Convert.ToDecimal(Model.PharmacyInvoiceItemReplaceResponse.SILINEN), 4).ToString("0.0000")</td>
+                    <td>@decimal.Round(Convert.ToDecimal(Model.PharmacyInvoiceItemReplaceResponse.FORMALASDIRILAN), 4).ToString("0.0000")</td>
+                    <td>@decimal.Round(Convert.ToDecimal(Model.PharmacyInvoiceItemReplaceResponse.FERQ), 4).ToString("0.0000")</td>
+                    <td>@decimal.Round(Convert.ToDecimal(Model.PharmacyInvoiceItemReplaceResponse.ELAVE_EDILEN), 4).ToString("0.0000")</td>
+                }
+
+                catch (Exception)
+                {
+
+                }
+            </tr>
+        </tbody>
+    </table>
+</div>
+

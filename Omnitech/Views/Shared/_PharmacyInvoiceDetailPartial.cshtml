@@ -1,0 +1,131 @@
+﻿@using Omnitech.Dtos
+@using Omnitech.Models
+@model PharmacyInvoiceDto
+
+@(
+Html.DevExtreme().DataGrid<PharmacyInvoiceDetail>()
+    .ShowBorders(true)
+    .ID("pharmacyInvoiceDetailDataContainer")
+    .DataSource(Model.PharmacyInvoiceDetails, new[] { "ID" })
+    .DataSource(Model.PharmacyInvoiceDetails)
+    .HoverStateEnabled(true)
+    .ShowBorders(true)
+    .Columns(columns =>
+        {
+            columns.AddFor(m => m.LOGICALREF).HeaderCellTemplate("LOGICALREF");
+            columns.AddFor(m => m.SKU).HeaderCellTemplate("Sku");
+            columns.AddFor(m => m.TARIX).HeaderCellTemplate("TARIX");
+            columns.AddFor(m => m.MIQDAR).HeaderCellTemplate("MIQDAR");
+            columns.AddFor(m => m.MEBLEG).HeaderCellTemplate("MEBLEG");
+            columns.AddFor(m => m.ANBAR).HeaderCellTemplate("ANBAR");
+            columns.AddFor(m => m.MEHSULUN_KODU).HeaderCellTemplate("MEHSULUN_KODU");
+            columns.AddFor(m => m.MEHSULUN_ADI).HeaderCellTemplate("MEHSULUN_ADI");
+            columns.AddFor(m => m.ISTEHSALCHI).HeaderCellTemplate("ISTEHSALCHI");
+            columns.AddFor(m => m.BARCODE).HeaderCellTemplate("BARCODE");
+            columns.AddFor(m => m.VAHID).HeaderCellTemplate("VAHID");
+            columns.AddFor(m => m.EDEDSAYI).HeaderCellTemplate("EDEDSAYI");
+            columns.AddFor(m => m.FIRMA).HeaderCellTemplate("FIRMA");
+            //columns.AddFor(m => m.DELETED).AllowHiding(true);
+        })
+    .Selection(s => s.Mode(SelectionMode.Single))
+    .AllowColumnResizing(true)
+    .Paging(p => p.PageSize(1000))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .Summary(s => s
+         .TotalItems(totalItems =>
+         {
+             totalItems.AddFor(m => m.MIQDAR).SummaryType(SummaryType.Sum).DisplayFormat("Cəm: {0}");
+             totalItems.AddFor(m => m.MEBLEG).SummaryType(SummaryType.Sum).DisplayFormat("Cəm: {0}");
+             totalItems.AddFor(m => m.LOGICALREF).SummaryType(SummaryType.Count).DisplayFormat("Say: {0}");
+         })
+     )
+)
+
+
+
+
+<script>
+
+    function changeColor() {
+        setTimeout(function () {
+            let stlineDataContainer = document.getElementById("pharmacyInvoiceDetailDataContainer");
+
+            var stlineTrs = stlineDataContainer.getElementsByClassName("dx-data-row");
+            let zerifeCount=0;
+
+            for (let f of stlineTrs) {
+                let prohibitionTd = f.children[12];
+                if (prohibitionTd.innerHTML == "ZERIFE"){
+                    zerifeCount+=1;
+                    f.style.backgroundColor = "yellow";
+                }
+            }
+
+
+            if(zerifeCount >0){
+                document.getElementById("btnPrint").setAttribute('disabled', 'disabled')
+                document.getElementById("btn_add").setAttribute('disabled', 'disabled')
+            }
+            else{
+                document.getElementById("btnPrint").removeAttribute("disabled");
+                document.getElementById("btn_add").removeAttribute("disabled");
+            }
+
+
+            if (zerifeCount == 0) {
+                document.getElementById("btnReplacePharmacyInvoiceItem").setAttribute('disabled', 'disabled')
+                
+            }
+            else{
+                document.getElementById("btnReplacePharmacyInvoiceItem").removeAttribute("disabled");
+                
+            }
+        }, 100)
+    }
+
+
+
+    $(function () {
+        $("#pharmacyInvoiceDetailDataContainer").dxDataGrid({
+
+            editing: {
+                allowDeleting: function (e) {
+                    changeColor();
+                    let deleted = e.row.data.DELETED;
+
+                    return deleted == 3;
+                },
+                confirmDelete: false,
+
+            },
+            onRowRemoving: function (e) {
+                let logicalref = e.data.LOGICALREF;
+                let sourceIndex = e.data.ANBAR;
+                let date = e.data.TARIX.toLocaleDateString();
+
+                var deferred = $.Deferred();
+                $.ajax({
+                    url: "/Pharmacy/DeletePharmacyInvoiceDetailLine",
+                    method: "GET",
+                    data: { logicalref: logicalref },
+                    success: function (validationResult) {
+                        if (validationResult.errorText) {
+                            deferred.reject(validationResult.errorText);
+                        } else {
+                            getPharmacyInvoiceReplacedItemSum(sourceIndex, date);
+                            deferred.resolve(false);
+                        }
+                    },
+                    error: function (res) {
+                        deferred.reject("Siline bilmedi");
+                    },
+                    timeout: 5000
+                });
+                e.cancel = deferred.promise();
+            },
+        })
+    })
+</script>

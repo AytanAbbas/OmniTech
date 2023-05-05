@@ -1,0 +1,65 @@
+﻿@using Omnitech.Dtos
+@using Omnitech.Models
+@model List<SalesLogs>
+
+@(Html.DevExtreme().DataGrid<SalesLogs>()
+    .ShowBorders(true)
+    .ID("ProblemicSalesLogDataContainer")
+    .DataSource(Model, new[] { "ID" })
+    .DataSource(Model)
+    .HoverStateEnabled(true)
+    .ShowBorders(true)
+    .Columns(columns =>
+    {
+        columns.AddFor(m => m.FAKTURA_NO).HeaderCellTemplate("FAKTURA_NO");
+        columns.AddFor(m => m.QEBZMEBLEG).HeaderCellTemplate("QEBZMEBLEG");
+        columns.AddFor(m => m.FICSAL_DOCUMENT).HeaderCellTemplate("FICSAL_DOCUMENT");
+        columns.AddFor(m => m.INSERT_DATE).HeaderCellTemplate("INSERT_DATE");
+        columns.AddFor(m => m.FIRMA).HeaderCellTemplate("FIRMA");
+
+
+    })
+    .Selection(s => s.Mode(SelectionMode.Single))
+    .AllowColumnResizing(true)
+    .Paging(p => p.PageSize(10))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .OnSelectionChanged("ProblemicSalesLog_selection_changed")
+
+
+)
+
+@(Html.DevExtreme().ContextMenu()
+    .ActiveStateEnabled(true)
+    .FocusStateEnabled(true)
+    .Width(200)
+    .Target("#ProblemicSalesLogDataContainer")
+    .OnItemClick("selectProblemicSalesLog")
+    .DisplayExpr("Text")
+    .ItemsExpr("ProblemicSalesLog")
+    .DataSource(new object[] {
+        new { Text = "Yenidən çap et",ID="selectedProblemicSalesLogs" }
+    })
+)
+
+
+
+
+<script>
+    let selectedProblemicSalesLogs;
+
+    function ProblemicSalesLog_selection_changed(selectedItems) {
+        selectedProblemicSalesLogs = selectedItems.selectedRowsData;
+    }
+
+    function selectProblemicSalesLog(e) {
+        if (!e.itemData.KNInvoiceInfos) {
+           
+            console.log(selectedProblemicSalesLogs[0])
+            console.log(selectedProblemicSalesLogs[0].FAKTURA_NO)
+            
+        }
+    }
+</script>

@@ -1,0 +1,69 @@
+﻿@using Omnitech.Dtos
+@using Omnitech.Models
+@model PharmacyInvoiceDto
+
+@(Html.DevExtreme().DataGrid<PharmacyInvoiceInfo>()
+    .ShowBorders(true)
+    .ID("pharmacyInvoiceInfoDataContainer")
+    .DataSource(Model.PharmacyInvoiceInfos, new[] { "ID" })
+    .DataSource(Model.PharmacyInvoiceInfos)
+    .HoverStateEnabled(true)
+    .ShowBorders(true)
+    .Columns(columns =>
+    {
+        columns.AddFor(m => m.TARIX).HeaderCellTemplate("TARIX");
+        columns.AddFor(m => m.ANBAR).HeaderCellTemplate("ANBAR");
+        columns.AddFor(m => m.FAKTURA).HeaderCellTemplate("FAKTURA");
+        columns.AddFor(m => m.APTEKIN_ADI).HeaderCellTemplate("APTEKIN_ADI");
+        columns.AddFor(m => m.SETR_SAY).HeaderCellTemplate("SETR_SAY");
+        columns.AddFor(m => m.CEMI_MAL_SAYI_IADE_CIXILMIS).HeaderCellTemplate("CEMI_MAL_SAYI_IADE_CIXILMIS");
+        columns.AddFor(m => m.CEMI_MEBLEG_IADE_CIXILMIS).HeaderCellTemplate("CEMI_MEBLEG_IADE_CIXILMIS");
+        columns.AddFor(m => m.IADE_MEBLEG_CEMI).HeaderCellTemplate("IADE_MEBLEG_CEMI");
+        columns.AddFor(m => m.IADE_MEBLEG_CEMI_GUNLUK_SATISH).HeaderCellTemplate("IADE_MEBLEG_CEMI_GUNLUK_SATISH");
+        columns.AddFor(m => m.QADAGA_SATISH).HeaderCellTemplate("QADAGA_SATISH");
+        columns.AddFor(m => m.QADAGA_IADE).HeaderCellTemplate("QADAGA_IADE");
+        columns.AddFor(m => m.KASSA_GONDERILME).HeaderCellTemplate("KASSA_GONDERILME");
+        columns.AddFor(m => m.fiscal).HeaderCellTemplate("FISCAL_ID");
+
+    })
+    .Selection(s => s.Mode(SelectionMode.Single))
+    .AllowColumnResizing(true)
+    .Paging(p => p.PageSize(10))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .OnSelectionChanged("pharmacy_inv_info_selection_changed")
+     .OnRowClick("onRowClick")
+)
+
+
+@(Html.DevExtreme().ContextMenu()
+    .ActiveStateEnabled(true)
+    .FocusStateEnabled(true)
+    .Width(200)
+    .Target("#pharmacyInvoiceInfoDataContainer")
+    .OnItemClick("selectPharmacyInvoiceInfo")
+    .DisplayExpr("Text")
+    .ItemsExpr("PharmacyInvoiceInfos")
+    .DataSource(new object[] {
+        new { Text = "Detallı bax",ID="selectedPharmacyInvoiceInfos" }
+    })
+)
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function onRowClick(e) {
+        var kassaGonderildi = e.data.KASSA_GONDERILME === 'GÖNDƏRİLİB';
+        if (kassaGonderildi) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bu qəbz artıq kassaya göndərilib',
+              
+            });
+        }
+    }
+</script>

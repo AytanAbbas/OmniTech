@@ -1,0 +1,120 @@
+﻿@using Omnitech.Dtos
+@using Omnitech.Models
+@model KNInvoiceDto
+
+@(Html.DevExtreme().DataGrid<KNInvoiceInfo>()
+    .ShowBorders(true)
+    .ID("knInvoiceInfoDataContainer")
+    .DataSource(Model.KNInvoiceInfos, new[] { "ID" })
+    .DataSource(Model.KNInvoiceInfos)
+    .HoverStateEnabled(true)
+    .ShowBorders(true)
+
+    .Columns(columns =>
+    {
+        columns.AddFor(m => m.INV_ID).HeaderCellTemplate("INV_ID");
+        columns.AddFor(m => m.FAKTURANO).HeaderCellTemplate("FAKTURANO");
+        columns.AddFor(m => m.TARIX).HeaderCellTemplate("TARIX");
+        columns.AddFor(m => m.setr_sayi).HeaderCellTemplate("SETIR_SAYI");
+        columns.AddFor(m => m.CARI_HESAB_KODU).HeaderCellTemplate("CARI_HESAB_KODU");
+        columns.AddFor(m => m.CARI_HESAB_ADI).HeaderCellTemplate("CARI_HESAB_ADI");
+        columns.AddFor(m => m.FAKTURA_MEBLEGI).HeaderCellTemplate("FAKTURA_MEBLEGI");
+        columns.AddFor(m => m.CAP_EDILMIS_MEBLEG).HeaderCellTemplate("CAP_EDILMIS_MEBLEG");
+        columns.AddFor(m => m.QEBZ_MEBLEGI).HeaderCellTemplate("QEBZ_MEBLEGI");
+        columns.AddFor(m => m.CAP_SAYI).HeaderCellTemplate("CAP_SAYI");
+        columns.AddFor(m => m.FICSAL_DOCUMENT).HeaderCellTemplate("FISCAL_ID");
+
+    })
+    .Selection(s => s.Mode(SelectionMode.Single))
+    .AllowColumnResizing(true)
+    .Paging(p => p.PageSize(10))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .OnSelectionChanged("kn_inv_info_selection_changed")
+
+    
+)
+
+
+@(Html.DevExtreme().ContextMenu()
+    .ActiveStateEnabled(true)
+    .FocusStateEnabled(true)
+    .Width(200)
+    .Target("#knInvoiceInfoDataContainer")
+    .OnItemClick("selectKNInvoiceInfo")
+    .DisplayExpr("Text")
+    .ItemsExpr("KNInvoiceInfos")
+    .DataSource(new object[] {
+        new { Text = "Detallı bax",ID="selectedKNInvoiceInfos" }
+    })
+)
+
+
+<script src="path/to/sweetalert2.all.min.js"></script>
+<link rel="stylesheet" href="path/to/sweetalert2.min.css"><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function changeColor() {
+        let stlineDataGrid = $("#knInvoiceInfoDataContainer").dxDataGrid("instance");
+        let currentPage = stlineDataGrid.pageIndex();
+        let startRowIndex = currentPage * stlineDataGrid.option("paging.pageSize");
+        let endRowIndex = startRowIndex + stlineDataGrid.option("paging.pageSize");
+
+        let rows = stlineDataGrid.getVisibleRows();
+        for (let i = 0; i < rows.length; i++) {
+            let index = rows[i].rowIndex;
+            let invoicePrice = rows[i].data.FAKTURA_MEBLEGI;
+            let printPrice = rows[i].data.CAP_EDILMIS_MEBLEG;
+
+            if (invoicePrice == printPrice) {
+                stlineDataGrid.getRowElement(index, 6).css("background-color", "chartreuse");
+                stlineDataGrid.getRowElement(index, 7).css("background-color", "chartreuse");
+             
+                //stlineDataGrid.getRowElement(index, 6).off("click").on("click", function (e) {
+                //    e.stopPropagation();
+                //    Swal.fire({
+                //        icon: 'warning',
+                //        title: 'Bu qəbz artıq kassaya göndərilib',
+                //    });
+                //});
+                //stlineDataGrid.getRowElement(index, 7).off("click").on("click", function (e) {
+                //    e.stopPropagation();
+                    //Swal.fire({
+                    //    icon: 'warning',
+                    //    title: 'Bu qəbz artıq kassaya göndərilib',
+                    //});
+                //});
+
+            } else {
+                stlineDataGrid.getCellElement(index, 6).css("background-color", "");
+                stlineDataGrid.getCellElement(index, 7).css("background-color", "");
+            }
+        }
+    }
+
+
+   
+
+    $("#knInvoiceInfoDataContainer").dxDataGrid({
+        onContentReady: function () {
+            changeColor();
+        },
+        onPageChanged: function () {
+            changeColor();
+        },
+
+    });
+
+
+
+  
+
+</script>
+
+
+
+
+
+

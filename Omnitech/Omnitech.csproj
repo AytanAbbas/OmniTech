@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+    <PackageReference Include="DevExtreme.AspNet.Data" Version="2.7.1" />
+    <PackageReference Include="DevExtreme.AspNet.Core" Version="20.2.6" />
+    <PackageReference Include="BuildBundlerMinifier" Version="2.9.406" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
+    <PackageReference Include="OpenXmlPowerTools" Version="4.5.3.2" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\fonts\font-awesome-4.7.0\css\" />
+      <Folder Include="wwwroot\images\" />
+      <Folder Include="wwwroot\vendor\animate\" />
+      <Folder Include="wwwroot\vendor\bootstrap\css\" />
+      <Folder Include="wwwroot\vendor\bootstrap\js\" />
+      <Folder Include="wwwroot\vendor\css-hamburgers\" />
+      <Folder Include="wwwroot\vendor\jquery\" />
+      <Folder Include="wwwroot\vendor\scss\" />
+      <Folder Include="wwwroot\vendor\tilt\" />
+      <Folder Include="wwwroot\vendor\select2\" />
+    </ItemGroup>
+
+    <ProjectExtensions><VisualStudio><UserProperties TemplateFeatures="NETCORE" /></VisualStudio></ProjectExtensions>
+
+</Project>
