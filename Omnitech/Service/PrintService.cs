@@ -144,12 +144,12 @@ namespace Omnitech.Service
                 FAKTURA_NAME = salesLogs.FAKTURA_NAME,
                 insert_date = DateTime.Now,
                 request = salesLogs.REQUEST_TPS575,
-                response = salesLogs.RESPONSE_TPS575
+                response = responseText
             };
 
             await AddTps575LogsAsync(tps575LogsForSale);
 
-            await _salesLogsRepository.UpdateResponseAsync(salesLogs.RECNO, salesLogs.RESPONSE_TPS575);
+            await _salesLogsRepository.UpdateResponseAsync(salesLogs.RECNO, responseText);
         }
 
         //public async Task PrintProblemicSalesLogsAsync()

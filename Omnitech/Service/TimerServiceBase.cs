@@ -5,15 +5,20 @@ namespace Omnitech.Service
 {
     public class TimerServiceBase
     {
+        private static readonly object Lock = new object();
         public async Task InvokeTimer(Func<Task> func, TimeSpan periodInterval)
         {
+
             var task = Task.Run(async () =>
             {
                 while (true)
                 {
                     try
                     {
-                        await func();
+                        lock (Lock)
+                        {
+                            func().GetAwaiter().GetResult();
+                        }
                     }
 
                     catch

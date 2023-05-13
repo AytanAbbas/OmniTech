@@ -33,8 +33,8 @@ namespace Omnitech.Service
             string result = "SUCCESS";
             try
             {
-                //if (await _salesLogsRepository.InvoiceHasExists(faktura))
-                //    throw new Exception("Bu qaime capa gonderilib");
+                if (await _salesLogsRepository.InvoiceHasExists(faktura))
+                    throw new Exception("Bu qaime capa gonderilib");
 
                 if (Enums.Tps575Url == null)
                     throw new Exception("Url is empty");

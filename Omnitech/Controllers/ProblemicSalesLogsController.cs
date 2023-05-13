@@ -32,7 +32,7 @@ namespace Omnitech.Controllers
                 return View(salesLogs);
         }
 
-        public async Task<IActionResult> GetProblemicSalesLogs()
+        public async Task<IActionResult> Print(int recno)
         {
             try
             {

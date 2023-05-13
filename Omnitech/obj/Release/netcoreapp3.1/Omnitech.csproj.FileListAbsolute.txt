@@ -417,3 +417,4 @@ D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\Omnitech.csproj.CopyCompl
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\Omnitech.dll
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\Omnitech.pdb
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\Omnitech.genruntimeconfig.cache
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\Razor\Views\Login\Index.cshtml.g.cs

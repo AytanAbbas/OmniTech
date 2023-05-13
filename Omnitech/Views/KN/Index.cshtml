@@ -142,18 +142,18 @@
             printedAmount_.value = printedAmount;
             difference_.value = difference;
 
-            if (invAmount == printedAmount) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Bu qəbz artıq kassaya göndərilib',
-                    });
-            }
+            //if (invAmount == printedAmount) {
+            //        Swal.fire({
+            //            icon: 'warning',
+            //            title: 'Bu qəbz artıq kassaya göndərilib',
+            //        });
+            //}
 
-            else{
+            //else{
             getKNInvoiceDetailsByInvIdAndMebleg(invId, printedAmount, difference);
             //knInvoiceDetails.style.display = "none";
             showInvoiceDetailModal();
-            }
+            //}
            
 
         }

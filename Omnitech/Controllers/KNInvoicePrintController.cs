@@ -62,7 +62,7 @@ namespace Omnitech.Controllers
             {
                 ViewBag.Message = exp.Message;
 
-                return Json(new { responseText = exp.Message, status = 500 });
+                 return Json(new { responseText = exp.Message, status = 500 });
             }
 
         }

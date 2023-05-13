@@ -61,9 +61,13 @@ D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\css\de
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\css\devextreme\icons\dxiconsmaterial.ttf
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\css\devextreme\icons\dxiconsmaterial.woff
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\css\devextreme\icons\dxiconsmaterial.woff2
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\css\font.css
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\css\main.css
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\css\modal.css
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\css\Site.css
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\css\vendor.css
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\fonts\font-awesome-4.7.0\css\font-awesome.min.css
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\images\login.png
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\devextreme\aspnet\dx.aspnet.data.js
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\devextreme\aspnet\dx.aspnet.mvc.js
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\devextreme\bootstrap.js
@@ -127,7 +131,20 @@ D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\dev
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\devextreme\vectormap-utils\dx.vectormaputils.debug.js
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\devextreme\vectormap-utils\dx.vectormaputils.js
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\devextreme\vectormap-utils\dx.vectormaputils.node.js
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\main.js
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\vendor - Copy.js
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\js\vendor.js
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\animate\animate.css
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\bootstrap\css\bootstrap.css
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\bootstrap\css\bootstrap.min.css
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\bootstrap\js\bootstrap.min.js
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\bootstrap\js\popper.js
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\css-hamburgers\hamburgers.min.css
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\jquery\jquery-3.2.1.min.js
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\scss\_reboot.scss
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\select2\select2.min.css
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\select2\select2.min.js
+D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\wwwroot\vendor\tilt\tilt.jquery.min.js
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\appsettings.Development.json
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\appsettings.json
 D:\Project\Omnitech\Omnitech\obj\Release\netcoreapp3.1\PubTmp\Out\bundleconfig.json

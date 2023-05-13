@@ -11,6 +11,7 @@
     .ShowBorders(true)
     .Columns(columns =>
     {
+        columns.AddFor(m => m.RECNO).AllowHiding(true);
         columns.AddFor(m => m.FAKTURA_NO).HeaderCellTemplate("FAKTURA_NO");
         columns.AddFor(m => m.QEBZMEBLEG).HeaderCellTemplate("QEBZMEBLEG");
         columns.AddFor(m => m.FICSAL_DOCUMENT).HeaderCellTemplate("FICSAL_DOCUMENT");
