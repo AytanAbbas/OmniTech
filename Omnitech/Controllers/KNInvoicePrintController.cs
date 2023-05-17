@@ -66,12 +66,12 @@ namespace Omnitech.Controllers
             }
 
         }
-        public async Task<IActionResult> ZReport()
-        {
-            await _knInvoicePrintService.ZReportAsync();
+        //public async Task<IActionResult> ZReport()
+        //{
+        //    await _knInvoicePrintService.ZReportAsync();
 
-            return Json(new { responseText = "" });
+        //    return Json(new { responseText = "" });
 
-        }
+        //}
     }
 }

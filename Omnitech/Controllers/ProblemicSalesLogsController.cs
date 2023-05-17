@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.EMMA;
+using OpenXmlPowerTools;
 
 namespace Omnitech.Controllers
 {
@@ -28,17 +29,18 @@ namespace Omnitech.Controllers
         public async Task<IActionResult> Index()
         {
 
-            List<SalesLogs> salesLogs = await _printService.PrintProblemicSalesLogsAsync();
+            List<SalesLogs> salesLogs = await _printService.GetProblemicSalesLogsAsync();
                 return View(salesLogs);
         }
+
 
         public async Task<IActionResult> Print(int recno)
         {
             try
             {
-               List< SalesLogs> sales = await _printService.PrintProblemicSalesLogsAsync();
+                await _printService.PrintProblemicSalesLogsByRecnoAsync(recno);
 
-                return View( "Index",sales);
+                return Json(new { responseText = "SUCCESS", status = 200 });
             }
 
             catch (Exception exp)

@@ -46,7 +46,7 @@
 )
 
 
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     let selectedProblemicSalesLogs;
@@ -60,7 +60,44 @@
            
             console.log(selectedProblemicSalesLogs[0])
             console.log(selectedProblemicSalesLogs[0].FAKTURA_NO)
+
+            PrintProblemicSales(selectedProblemicSalesLogs[0].RECNO)
             
         }
+    }
+
+
+    function PrintProblemicSales(recno) {
+
+        $.ajax({
+            url: "/ProblemicSalesLogs/Print",
+            method: "GET",
+            data: { recno: recno },
+            success: function (res) {
+                if (res.status == 500) {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.responseText,
+                    });
+                 
+                }
+                else {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.responseText,
+                    });
+                }
+                location.reload();
+
+            },
+            error: function (res) {
+
+                alert(res.responseText);
+            }
+
+        });
+
     }
 </script>

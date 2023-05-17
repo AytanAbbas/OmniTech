@@ -111,7 +111,6 @@ namespace Omnitech.Dal.AdoNet
                     recnoParameter.Value = recno;
 
 
-
                     SqlParameter jsonParameter = new SqlParameter();
                     jsonParameter.ParameterName = "@json";
                     jsonParameter.SqlDbType = SqlDbType.NVarChar;
@@ -131,13 +130,28 @@ namespace Omnitech.Dal.AdoNet
             }
         }
 
-        public async Task<SalesLogs> GetAllSalesLogsByRecnoAsync(int recno)
+        public async Task AddLogAsync(int recno,string invName,string request, string json)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionStrIntegrlo))
+            {
+                connection.Open();
+                using (SqlCommand sqlCommand = new SqlCommand(SaleLogsQueries.AddLogQuery(recno,invName,request, json), connection))
+                {
+                    await sqlCommand.ExecuteNonQueryAsync();
+
+                    sqlCommand.Dispose();
+                }
+                connection.Close();
+            }
+        }
+
+        public async Task<SalesLogs> GetSalesLogsByRecnoAsync(int recno)
         {
             SalesLogs salesLogs = null;
             await using (SqlConnection sqlConnection = new SqlConnection(_connectionStrIntegrlo))
             {
                 await sqlConnection.OpenAsync();
-                await using (SqlCommand sqlCommand = new SqlCommand(SaleLogsQueries.GetAllSalesLogsForPrintQuery(), sqlConnection))
+                await using (SqlCommand sqlCommand = new SqlCommand(SaleLogsQueries.GetSalesLogsByRecnoAsync(recno), sqlConnection))
                 {
                     SqlDataReader sqlDataReader = await sqlCommand.ExecuteReaderAsync();
                     while (await sqlDataReader.ReadAsync())
@@ -205,6 +219,7 @@ namespace Omnitech.Dal.AdoNet
                     {
                         SalesLogs salesLogs = new SalesLogs
                         {
+                            RECNO = sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("RECNO")) ? 0 : sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("RECNO")),
                             FAKTURA_NO = sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("FAKTURA_NO")) ? "" : sqlDataReader.GetString(sqlDataReader.GetOrdinal("FAKTURA_NO")),
                             RESPONSE_TPS575 = sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("RESPONSE_TPS575")) ? "" : sqlDataReader.GetString(sqlDataReader.GetOrdinal("RESPONSE_TPS575")),
                             QEBZMEBLEG = sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("QEBZMEBLEG")) ? 0 : sqlDataReader.GetDouble(sqlDataReader.GetOrdinal("QEBZMEBLEG")),

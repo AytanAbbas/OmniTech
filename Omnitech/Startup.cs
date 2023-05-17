@@ -29,22 +29,22 @@ namespace Omnitech
                 .AddControllersWithViews()
                 .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
-            services.AddSingleton<PharmacyInvoiceRepository>();
-            services.AddSingleton<KNInvoiceRepository>();
-            services.AddSingleton<SalesLogsRepository>();
-            services.AddSingleton<PharmacyInvoiceSalesLogsRepository>();
-            services.AddSingleton<KNInvoiceSalesLogsRepository>();
-            services.AddSingleton<JobPermissionRepository>(); 
-            services.AddSingleton<Tps575LogsRepository>();
+            services.AddScoped<PharmacyInvoiceRepository>();
+            services.AddScoped<KNInvoiceRepository>();
+            services.AddScoped<SalesLogsRepository>();
+            services.AddScoped<PharmacyInvoiceSalesLogsRepository>();
+            services.AddScoped<KNInvoiceSalesLogsRepository>();
+            services.AddScoped<JobPermissionRepository>(); 
+            services.AddScoped<Tps575LogsRepository>();
             services.AddScoped<Tps575UrlRepository>();
 
-            services.AddSingleton<KNInvoicePrintService>();
-            services.AddSingleton<KNInvoiceService>();
-            services.AddSingleton<OmnitechPrintService>();
-            services.AddSingleton<PharmacyInvoicePrintService>();
-            services.AddSingleton<PharmacyInvoiceService>();
-            services.AddSingleton<PrintService>();
-            services.AddSingleton<PrintTimerService>();
+            services.AddScoped<KNInvoicePrintService>();
+            services.AddScoped<KNInvoiceService>();
+            //services.AddSingleton<OmnitechPrintService>();
+            services.AddScoped<PharmacyInvoicePrintService>();
+            services.AddScoped<PharmacyInvoiceService>();
+            services.AddScoped<PrintService>();
+            services.AddScoped<PrintTimerService>();
 
             services.AddScoped<Tps575UrlService>();
 
@@ -73,7 +73,7 @@ namespace Omnitech
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Login}/{action=Index}/{id?}");
+                    pattern: "{controller=ProblemicSalesLogs}/{action=Index}/{id?}");
             });
         }
     }

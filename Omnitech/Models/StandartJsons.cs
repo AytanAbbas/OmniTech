@@ -37,5 +37,27 @@
 
             return System.Text.Json.JsonSerializer.Serialize(omnitechRequestBase);
         }
+
+
+        public static string CloseShiftJson(OmnitechLoginResponse omnitechLoginResponse)
+        {
+            OmnitechRequestBase omnitechRequestBase = new OmnitechRequestBase();
+
+            CheckData checkData = new CheckData
+            {
+                check_type = 13
+            };
+
+            RequestData requestData = new RequestData
+            {
+                checkData = checkData,
+                access_token = omnitechLoginResponse.access_token
+            };
+
+            omnitechRequestBase.requestData = requestData;
+
+
+            return System.Text.Json.JsonSerializer.Serialize(omnitechRequestBase);
+        }
     }
 }

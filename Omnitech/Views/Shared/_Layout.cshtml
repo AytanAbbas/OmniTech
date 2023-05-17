@@ -41,6 +41,7 @@
                 <li class="nav-item"><a href="/Pharmacy/Index" class="nav-link" style="font-weight: 500;">Firma 500</a></li>
                 <li class="nav-item"><a href="/ProblemicSalesLogs/Index" class="nav-link" style="font-weight: 500;">Çap olunmayan qaimələr</a></li>
             </ul>
+            <a class="closeKassa btn btn-success" id="btnCloseShift" >  Kassanı bağla </a>
         </div>
     </nav>
 
@@ -54,6 +55,8 @@
 
 
 </body>
+
+
 <script>
     $(document).ready(function () {
         var url = window.location.href;
@@ -62,6 +65,40 @@
             return url.indexOf($(this).attr('href')) != -1;
         }).addClass('active');
     });
+
+    document.getElementById("btnCloseShift").addEventListener("click", CloseShift);
+
+    function CloseShift() {
+
+      
+
+        $.ajax({
+            url: "/Home/CloseShift",
+            method: "GET",   
+            success: function (res) {
+                if (res.status == 500) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: res.responseText,
+                    });
+                }
+
+                else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.responseText,
+                    });
+                }
+
+            },
+            error: function (res) {
+                Swal.fire({
+                    icon: 'error',
+                    title: res.responseText,
+                });
+            }
+        });
+    }
 </script>
 
 

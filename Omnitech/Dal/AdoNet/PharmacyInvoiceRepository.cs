@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System;
 using Omnitech.Models;
 using Omnitech.Dal.AdoNet.Queries;
+using System.Data.Common;
 
 namespace Omnitech.Dal.AdoNet
 {
@@ -62,6 +63,7 @@ namespace Omnitech.Dal.AdoNet
                             KASSA_GONDERILME = dataReader.IsDBNull(dataReader.GetOrdinal("KASSA_GONDERILME")) ? "" : dataReader.GetString(dataReader.GetOrdinal("KASSA_GONDERILME")),
                             APTEKIN_ADI = dataReader.IsDBNull(dataReader.GetOrdinal("APTEKIN_ADI")) ? "" : dataReader.GetString(dataReader.GetOrdinal("APTEKIN_ADI")),
                             fiscal = dataReader.IsDBNull(dataReader.GetOrdinal("fiscal")) ? "" : dataReader.GetString(dataReader.GetOrdinal("fiscal")),
+                            mebleg_cap = dataReader.IsDBNull(dataReader.GetOrdinal("mebleg_cap")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("mebleg_cap")),
 
                         };
                         invoices.Add(invoice);
@@ -74,7 +76,6 @@ namespace Omnitech.Dal.AdoNet
             }
             return invoices;
         }
-
         public async Task<List<PharmacyInvoiceDetail>> GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(int sourceIndex, DateTime date)
         {
             List<PharmacyInvoiceDetail> pharmacyInvoiceDetails = new List<PharmacyInvoiceDetail>();
@@ -371,7 +372,7 @@ namespace Omnitech.Dal.AdoNet
         {
             double result = 0;
 
-            await using (SqlConnection sqlConnection = new SqlConnection(_connectionStrLogo))
+            await using (SqlConnection sqlConnection = new SqlConnection(_connectionStrIntegrlo))
             {
                 await sqlConnection.OpenAsync();
                 await using (SqlCommand sqlCommand = new SqlCommand(PharmacyInvoiceQueries.GetPharmacyInvoiceAddingItemSumByDateAndSourceIndexQuery(sourceIndex, datetime), sqlConnection))

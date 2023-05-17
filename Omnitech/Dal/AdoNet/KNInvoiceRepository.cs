@@ -123,7 +123,7 @@ namespace Omnitech.Dal.AdoNet
                 await using (SqlConnection connection = new SqlConnection(_connectionStrIntegrlo))
                 {
                     await connection.OpenAsync();
-
+                  
                     await using (SqlCommand sqlCommand = new SqlCommand("TPS575_GET_FAKTURA_DETAIL_001", connection))
                     {
                         SqlParameter invoiceParameter = new SqlParameter();

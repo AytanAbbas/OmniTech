@@ -18,15 +18,15 @@ namespace Omnitech.Dal.AdoNet.Queries
                                       ,[FAKTURA_NO]
                                       ,[FAKTURA_NAME]
                                       ,[REQUEST_TPS575]
-                                      ,[RESPONSE_TPS575]
+                                      ,ISNULL(RESPONSE_TPS575,'') RESPONSE_TPS575
                                       ,[FICSAL_DOCUMENT]
                                       ,[TIPI]
                                       ,[INSERT_DATE]
                                       ,[PC_NAME]
                                       ,[IP_REQUEST]
                                       ,[FICSAL_DOCUMENT_LONG]
-                                  FROM [INTEGRLO].[dbo].[TPS575_SaleLogs]
-                                  --WHERE FAKTURA_NO LIKE @FAKTURA_BASE+'%'
+                                      ,[FIRMA]
+                                  FROM [TPS575_SaleLogs]
                                   WHERE FAKTURA_NO LIKE @FAKTURA +'%'";
             return query;
 
@@ -55,7 +55,7 @@ namespace Omnitech.Dal.AdoNet.Queries
 
         }
 
-        public static string GetAllSalesLogsByRecnoAsync(int recno)
+        public static string GetSalesLogsByRecnoAsync(int recno)
         {
             string query = $@"
                                   SELECT 
@@ -82,15 +82,15 @@ namespace Omnitech.Dal.AdoNet.Queries
         {
             string query = $@"
                                      SELECT 
-                                      [FAKTURA_NO]
+                                       sl.RECNO
+                                      ,[FAKTURA_NO]
                                      ,[RESPONSE_TPS575]
-                                      ,VP.QEBZMEBLEG  
+                                       ,(SELECT top 1 QEBZMEBLEG FROM TPS575_VPUL vp with (nolock) where vp.FAKTURANAME =sl.FAKTURA_NO ORDER BY RECNO DESC) QEBZMEBLEG  
                                       ,[FICSAL_DOCUMENT]                                     
                                       ,[INSERT_DATE]                                     
                                       ,sl.[FIRMA]
                                   FROM [TPS575_SaleLogs] sl
-								  LEFT OUTER JOIN INTEGRLO.dbo.TPS575_VPUL vp with (nolock) on vp.FAKTURANAME =sl.FAKTURA_NO
-                                  where ISNULL(FICSAL_DOCUMENT,'')='' and ISNULL(RESPONSE_TPS575,'')<>''
+                                  where ISNULL(FICSAL_DOCUMENT,'')=''-- and ISNULL(RESPONSE_TPS575,'')<>''
 								  order by sl.RECNO";
             return query;
 
@@ -119,6 +119,13 @@ namespace Omnitech.Dal.AdoNet.Queries
 	                            END
 
                             SELECT  @invHasExist invHasExist";
+            return query;
+        }
+
+        public static string AddLogQuery(int recno,string invName,string request, string json)
+        {
+            string query = $@"INSERT INTO Responses(RECNO,InvoiceName,Request, Json_,InsertDate) VALUES
+					({recno},'{invName}','{request}','{json}',GETDATE())";
             return query;
         }
     }

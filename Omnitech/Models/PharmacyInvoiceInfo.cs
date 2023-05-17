@@ -17,5 +17,6 @@ namespace Omnitech.Models
         public string KASSA_GONDERILME { get; set; }
         public string APTEKIN_ADI { get; set; }
         public string fiscal { get; set; }
+        public double mebleg_cap { get; set; }
     }
 }

@@ -68,7 +68,7 @@ namespace Omnitech.Dal.AdoNet.Queries
         {
             string query = $@"SELECT 
                                  ISNULL(SUM(MEBLEG),0) MEBLEG
-                              FROM INTEGRLO.dbo.TPS575_TOTAL_TEMPS
+                              FROM TPS575_TOTAL_TEMPS
                               WHERE TARIX='{datetime.ToString("yyyy-MM-dd")}' AND ANBAR={sourceIndex} AND DELETED=3";
 
             return query;

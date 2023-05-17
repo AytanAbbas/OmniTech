@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using static Omnitech.Utilities.Enums;
+using OpenXmlPowerTools;
 
 namespace Omnitech.Service
 {
-    public class PrintService : OmnitechPrintService
+    public class PrintService
     {
         private static readonly object LockAll = new object();
         private static readonly object LockSingle = new object();
@@ -28,70 +29,50 @@ namespace Omnitech.Service
         {
             lock (LockAll)
             {
-                PrintAsync().GetAwaiter().GetResult();
+                // PrintAsync().GetAwaiter().GetResult();
             }
         }
 
-        private async Task PrintAsync()
+        public async Task PrintAsync(string fakturaName, OmnitechLoginResponse loginResponse)
         {
             DateTime now = DateTime.Now;
-            JobPermission jobPermission = null;
-
             try
             {
-                jobPermission = await _jobPermissionRepository.GetJobPermissionByIdAsync(jobId);
+                List<SalesLogs> salesLogsList = await _salesLogsRepository.GetSalesLogsByFakturaNameAsync(fakturaName);
 
-                if (jobPermission != null)
+                OmnitechShiftResponse omnitechShiftResponse = await OmnitechPrintService.CheckShiftAsync(loginResponse);
+               
+
+                foreach (var salesLogs in salesLogsList)
                 {
-                    if (jobPermission.HasPermission == 1 && jobPermission.IsRunning == 0 && jobPermission.NextRun <= now)
+                    try
                     {
-                        await _jobPermissionRepository.ChangePermissionAsync(jobPermission.Id, 1, jobPermission.IntervalUnit, jobPermission.IntervalType);
+                        if (string.IsNullOrEmpty(salesLogs.RESPONSE_TPS575))
+                            await PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse);
+                    }
 
-                        List<SalesLogs> salesLogsList = await _salesLogsRepository.GetAllSalesLogsForPrintAsync();
-
-                        OmnitechLoginResponse loginResponse = await Login();
-                        OmnitechShiftResponse omnitechShiftResponse = await CheckShiftAsync(loginResponse);
-
-                        foreach (var salesLogs in salesLogsList)
+                    catch (Exception exp)
+                    {
+                        try
                         {
-                            try
-                            {
-                                if (await _jobPermissionRepository.GetHasPermissionById(jobId) == 1)
-                                {
-                                    lock (LockSingle)
-                                    {
-                                        PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse).GetAwaiter().GetResult();
-                                    }
-                                }
-                            }
+                            string logMsg = $"{salesLogs.RECNO} --> {salesLogs.FAKTURA_NAME} --> {exp.Message}";
 
-                            catch (Exception exp)
-                            {
-                                try
-                                {
-                                    string logMsg = $"{salesLogs.RECNO} --> {salesLogs.FAKTURA_NAME} --> {exp.Message}";
+                            await _jobPermissionRepository.AddJobExceptionAsync(jobId, logMsg);
+                        }
 
-                                    await _jobPermissionRepository.AddJobExceptionAsync(jobPermission.Id, exp.Message);
-                                }
-
-                                catch (Exception exp2)
-                                {
-                                    string expMsg = exp2.Message;
-                                }
-                            }
+                        catch (Exception exp2)
+                        {
+                            string expMsg = exp2.Message;
                         }
                     }
+
                 }
             }
+
 
             catch (Exception exp)
             {
                 await _jobPermissionRepository.AddJobExceptionAsync(jobId, exp.Message);
-            }
-
-            finally
-            {
-                await _jobPermissionRepository.ChangePermissionAsync(jobPermission.Id, 0, jobPermission.IntervalUnit, jobPermission.IntervalType);
             }
         }
 
@@ -102,9 +83,9 @@ namespace Omnitech.Service
 
         }
 
-        private async Task PrintSingleAsync(SalesLogs salesLogs, OmnitechLoginResponse loginResponse, OmnitechShiftResponse omnitechShiftResponse)
+        public async Task PrintSingleAsync(SalesLogs salesLogs, OmnitechLoginResponse loginResponse, OmnitechShiftResponse omnitechShiftResponse)
         {
-            SalesLogs salesLogsFromDb = await _salesLogsRepository.GetAllSalesLogsByRecnoAsync(salesLogs.RECNO);
+            SalesLogs salesLogsFromDb = await _salesLogsRepository.GetSalesLogsByRecnoAsync(salesLogs.RECNO);
 
             if (salesLogsFromDb == null)
                 throw new Exception($@"{salesLogs.RECNO} --> {salesLogs.FAKTURA_NO} --> qaime tapilmadi");
@@ -119,7 +100,7 @@ namespace Omnitech.Service
 
             if (!omnitechShiftResponse.shiftStatus)
             {
-                omnitechOpenShiftResponse = await OpenShiftAsync(loginResponse);
+                omnitechOpenShiftResponse = await OmnitechPrintService.OpenShiftAsync(loginResponse);
 
                 Tps575Logs tps575Logs = new Tps575Logs
                 {
@@ -132,7 +113,8 @@ namespace Omnitech.Service
                 await AddTps575LogsAsync(tps575Logs);
             }
 
-            string responseText = await InvokeAsync(salesLogs.REQUEST_TPS575);
+
+            string responseText = await OmnitechPrintService.InvokeAsync(salesLogs.REQUEST_TPS575);
 
             OmnitechSaleResponse omnitechSaleResponse = System.Text.Json.JsonSerializer.Deserialize<OmnitechSaleResponse>(responseText);
 
@@ -150,77 +132,55 @@ namespace Omnitech.Service
             await AddTps575LogsAsync(tps575LogsForSale);
 
             await _salesLogsRepository.UpdateResponseAsync(salesLogs.RECNO, responseText);
+
+            await _salesLogsRepository.AddLogAsync(salesLogs.RECNO, salesLogs.FAKTURA_NO,salesLogs.REQUEST_TPS575, responseText);
+        }
+   
+        public async Task<List<SalesLogs>> GetProblemicSalesLogsAsync()
+        {
+            return await _salesLogsRepository.GetProblemicSalesLogsForPrintAsync();
         }
 
-        //public async Task PrintProblemicSalesLogsAsync()
-        //{
-        //    DateTime now = DateTime.Now;
-        //    JobPermission jobPermission = null;
-
-        //    try
-        //    {
-        //        jobPermission = await _jobPermissionRepository.GetJobPermissionByIdAsync(jobId);
-
-        //        if (jobPermission != null)
-        //        {
-        //            if (jobPermission.HasPermission == 1 && jobPermission.IsRunning == 0 && jobPermission.NextRun <= now)
-        //            {
-        //                await _jobPermissionRepository.ChangePermissionAsync(jobPermission.Id, 1, jobPermission.IntervalUnit, jobPermission.IntervalType);
-
-        //                List<SalesLogs> salesLogsList = await _salesLogsRepository.GetProblemicSalesLogsForPrintAsync();
-
-        //                OmnitechLoginResponse loginResponse = await Login();
-        //                OmnitechShiftResponse omnitechShiftResponse = await CheckShiftAsync(loginResponse);
-
-        //                foreach (var salesLogs in salesLogsList)
-        //                {
-        //                    try
-        //                    {
-        //                        if (await _jobPermissionRepository.GetHasPermissionById(jobId) == 1)
-        //                        {
-        //                            lock (LockSingle)
-        //                            {
-        //                                PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse).GetAwaiter().GetResult();
-        //                            }
-        //                        }
-        //                    }
-
-        //                    catch (Exception exp)
-        //                    {
-        //                        try
-        //                        {
-        //                            string logMsg = $"{salesLogs.RECNO} --> {salesLogs.FAKTURA_NAME} --> {exp.Message}";
-
-        //                            await _jobPermissionRepository.AddJobExceptionAsync(jobPermission.Id, exp.Message);
-        //                        }
-
-        //                        catch (Exception exp2)
-        //                        {
-        //                            string expMsg = exp2.Message;
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    catch (Exception exp)
-        //    {
-        //        await _jobPermissionRepository.AddJobExceptionAsync(jobId, exp.Message);
-        //    }
-
-        //    finally
-        //    {
-        //        await _jobPermissionRepository.ChangePermissionAsync(jobPermission.Id, 0, jobPermission.IntervalUnit, jobPermission.IntervalType);
-        //    }
-        //}
-
-
-        public async Task<List<SalesLogs>> PrintProblemicSalesLogsAsync()
+        public async Task PrintProblemicSalesLogsByRecnoAsync(int recno)
         {
-            List<SalesLogs> salesLogs = await _salesLogsRepository.GetProblemicSalesLogsForPrintAsync();
+            SalesLogs salesLogs = null;
+            try
+            {
+                salesLogs = await _salesLogsRepository.GetSalesLogsByRecnoAsync(recno);
 
-            return salesLogs;
+
+                if (!string.IsNullOrEmpty(salesLogs.RESPONSE_TPS575))
+                {
+
+                    OmnitechSaleResponse omnitechSaleResponse = System.Text.Json.JsonSerializer.Deserialize<OmnitechSaleResponse>(salesLogs.RESPONSE_TPS575);
+
+                    if (omnitechSaleResponse.code != 0)
+                    {
+                        OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login();
+
+                        OmnitechShiftResponse omnitechShiftResponse = await OmnitechPrintService.CheckShiftAsync(loginResponse);
+
+                        await PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse);
+                    }
+                }
+
+                else
+                {
+                    OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login();
+
+                    OmnitechShiftResponse omnitechShiftResponse = await OmnitechPrintService.CheckShiftAsync(loginResponse);
+
+                    await PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse);
+                }
+
+            }
+
+            catch (Exception exp)
+            {
+                string logMsg = $"{salesLogs.RECNO} --> {salesLogs.FAKTURA_NAME} --> {exp.Message}";
+
+                await _jobPermissionRepository.AddJobExceptionAsync(jobId, logMsg);
+            }
         }
     }
 }

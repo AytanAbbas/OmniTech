@@ -11,7 +11,7 @@ namespace Omnitech.Service
 {
     public class OmnitechPrintService
     {
-        public async Task<OmnitechLoginResponse> Login()
+        public static async Task<OmnitechLoginResponse> Login()
         {
             string json = StandartJsons.LoginJson;
 
@@ -20,7 +20,7 @@ namespace Omnitech.Service
             return System.Text.Json.JsonSerializer.Deserialize<OmnitechLoginResponse>(responseText);
         }
 
-        public async Task<OmnitechShiftResponse> CheckShiftAsync(OmnitechLoginResponse omnitechLoginResponse)
+        public static async Task<OmnitechShiftResponse> CheckShiftAsync(OmnitechLoginResponse omnitechLoginResponse)
         {
             OmnitechRequestBase omnitechRequestBase = new OmnitechRequestBase();
 
@@ -44,7 +44,7 @@ namespace Omnitech.Service
             return System.Text.Json.JsonSerializer.Deserialize<OmnitechShiftResponse>(responseText);
         }
 
-        public async Task<OmnitechOpenShiftResponse> OpenShiftAsync(OmnitechLoginResponse omnitechLoginResponse)
+        public static async Task<OmnitechOpenShiftResponse> OpenShiftAsync(OmnitechLoginResponse omnitechLoginResponse)
         {
             string json = StandartJsons.OpenShiftJson(omnitechLoginResponse);
 
@@ -53,7 +53,7 @@ namespace Omnitech.Service
             return System.Text.Json.JsonSerializer.Deserialize<OmnitechOpenShiftResponse>(responseText);
         }
 
-        public async Task ZReportAsync()
+        public static async Task ZReportAsync()
         {
             OmnitechRequestBase omnitechRequestBase = new OmnitechRequestBase();
 
@@ -77,8 +77,7 @@ namespace Omnitech.Service
 
         }
 
-
-        protected async Task<string> InvokeAsync(string json)
+        public static async Task<string> InvokeAsync(string json)
         {
             string responseText = "";
 
@@ -87,12 +86,11 @@ namespace Omnitech.Service
                 if (Enums.Tps575Url == null)
                     throw new Exception("Url is empty");
 
-                using (var httpClient = new HttpClient())
+                using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.Timeout = TimeSpan.FromSeconds(60);
 
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
-
 
                     var response = await httpClient.PostAsync(Enums.Tps575Url.URL, content);
 
@@ -115,8 +113,5 @@ namespace Omnitech.Service
 
             return responseText;
         }
-
-
-
     }
 }

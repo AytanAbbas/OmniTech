@@ -13,7 +13,7 @@ using Omnitech.Utilities;
 namespace Omnitech.Service
 {
 
-    public class PharmacyInvoicePrintService : OmnitechPrintService
+    public class PharmacyInvoicePrintService
     {
         int jobId = (int)JobsPermission.PharmacyPrintService;
 
@@ -28,20 +28,18 @@ namespace Omnitech.Service
             _printService = printService;
         }
 
+
         public async Task<string> SendKassaAsync(int anbar, DateTime tarix, string faktura, int chekSayi)
         {
             string result = "SUCCESS";
             try
             {
-                if (await _salesLogsRepository.InvoiceHasExists(faktura))
-                    throw new Exception("Bu qaime capa gonderilib");
-
                 if (Enums.Tps575Url == null)
                     throw new Exception("Url is empty");
 
                 string url = Enums.Tps575Url.URL;
 
-                OmnitechLoginResponse loginResponse = await Login();
+                OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login();
 
                 Tps575Logs tps575Logs = new Tps575Logs
                 {
@@ -53,7 +51,15 @@ namespace Omnitech.Service
 
                 await _printService.AddTps575LogsAsync(tps575Logs);
 
+                if (loginResponse == null || loginResponse == default)
+                    throw new Exception("Kassaya qosula bilmedi");
+
+                else if(string.IsNullOrEmpty(loginResponse.access_token))
+                    throw new Exception("Kassaya qosula bilmedi");
+
                 await _salesLogsRepository.SendKassaAsync(anbar, tarix, loginResponse.access_token, url, faktura, chekSayi);
+
+                await _printService.PrintAsync(faktura, loginResponse);
             }
 
             catch (Exception exp)
