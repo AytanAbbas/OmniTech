@@ -10,8 +10,8 @@
                     {
                     ""requestData"":{ ""checkData"":{ ""check_type"":40
                     },
-                    ""name"":""Kassir"",
-                    ""password"":""1""
+                    ""name"":""SuperApi"",
+                    ""password"":""123""
                     }
                     }";
             }
@@ -59,5 +59,6 @@
 
             return System.Text.Json.JsonSerializer.Serialize(omnitechRequestBase);
         }
+       
     }
 }
