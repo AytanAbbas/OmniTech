@@ -27,15 +27,17 @@
             <div class="col-6">
                 <div class="row">
                     <div class="result col-3">
-                        <button id="btnReplacePharmacyInvoiceItem" class="btn btn-primary col-12" style=" background-color: #337ab7;">Formalaşdır</button>
-                    </div>
-                    <div id="pharmacyInvoiceItemReplace" style="position: relative;margin-top: -7%;margin-left: 25%;">
+                        <span style="border: 1px solid transparent;padding: 12px 0px;background-color: #337ab7;color: white;line-height: 3.2;"> Faktura məbləği:</span>
+                        <span id="totalSum" style="position: relative;left: 107%;top: -50%" />
+@*                        <button id="btnReplacePharmacyInvoiceItem" class="btn btn-primary col-12" style=" background-color: #337ab7;">Formalaşdır</button>
+*@                    </div>
+                    @*<div id="pharmacyInvoiceItemReplace" style="position: relative;margin-top: -7%;margin-left: 25%;">
                         <partial name="_PharmacyInvoiceItemReplacePartial" />
-                    </div>
-                    <div style="position: relative;bottom: 140px;left: 100%;">
+                    </div>*@
+                    @*<div style="position: relative;bottom: 140px;left: 100%;">
                         <span style="border: 1px solid transparent;padding: 12px 14px;background-color: #337ab7;color: white;line-height: 3.2;"> Faktura məbləği:</span>
                         <span id="totalSum" style="position:relative;top: 73px;left: -48%;" />
-                    </div>
+                    </div>*@
                 </div>
             </div>
         </div>
@@ -71,7 +73,7 @@
     let overlay = document.getElementById("overlay");
     let modall = document.getElementById("modal");
     let btn_close = document.getElementById("btn_close");
-    let btnReplacePharmacyInvoiceItem = document.getElementById("btnReplacePharmacyInvoiceItem");
+    //let btnReplacePharmacyInvoiceItem = document.getElementById("btnReplacePharmacyInvoiceItem");
     let food_supplement_item_select = document.getElementById("food_supplement_item_select");
 
     let selectedPharmacyInvoiceInfo;
@@ -81,7 +83,7 @@
     document.getElementById("pharmacyEndDate").value = currentDate;
 
     btnPharmacySearch.addEventListener("click", getPharmacyInvoiceInfos);
-    btnReplacePharmacyInvoiceItem.addEventListener("click", replacePharmacyInvoiceItem);
+    //btnReplacePharmacyInvoiceItem.addEventListener("click", replacePharmacyInvoiceItem);
     document.getElementById("btn_add").addEventListener("click", addFoodSupplementItem);
     document.getElementById("btnPrint").addEventListener("click", printInvoice);
 
@@ -120,18 +122,18 @@
         if (!e.itemData.PharmacyInvoiceInfos) {
             let sourceIndex = selectedPharmacyInvoiceInfo[0].ANBAR;
             let date = selectedPharmacyInvoiceInfo[0].TARIX;
-            let totalSum = selectedPharmacyInvoiceInfo[0].CEMI_MEBLEG_IADE_CIXILMIS;
-            getPharmacyInvoiceDetailsBySourceIndexAndDate(sourceIndex, date);
+            let totalSum = selectedPharmacyInvoiceInfo[0].NET_SATISH;
+            getPharmacyInvoiceDetailsBySourceIndexAndDate(sourceIndex, date, totalSum);
 
             document.getElementById("totalSum").innerHTML = totalSum;
         }
     }
 
-    function getPharmacyInvoiceDetailsBySourceIndexAndDate(sourceIndex, date) {
+    function getPharmacyInvoiceDetailsBySourceIndexAndDate(sourceIndex, date, invDesirable) {
         $.ajax({
             url: "/Pharmacy/GetPharmacyInvoiceDetailsBySourceIndexAndDate",
             method: "GET",
-            data: { sourceIndex: sourceIndex, date: date.toLocaleDateString() },
+            data: { sourceIndex: sourceIndex, date: date.toLocaleDateString(), invDesirable: invDesirable },
             success: function (res) {
                 if (res.status == 500) {
                     alert(res.responseText);
@@ -141,7 +143,7 @@
                     $("#pharmacyInvoiceDetails").html(res);
                     getPharmacyInvoiceReplacedItemSum(sourceIndex, date.toLocaleDateString());
                     showInvoiceDetailModal();
-                    changeColor();
+                    //changeColor();
                 }
             },
             error: function (res) {
@@ -185,7 +187,7 @@
                     $("#pharmacyInvoiceItemReplace").html(res);
                     getPharmacyInvoiceDetailsBySourceIndexAndDate(sourceIndex, date);
                     showInvoiceDetailModal();
-                    changeColor();
+                    //changeColor();
                 }
             },
             error: function (res) {
@@ -220,12 +222,13 @@
         let selectedFoodItemRef = document.getElementById("food_supplement_item_select").value;
         let tarix = selectedPharmacyInvoiceInfo[0].TARIX.toLocaleDateString();
         let anbar = selectedPharmacyInvoiceInfo[0].ANBAR;
+        let mebleg = selectedPharmacyInvoiceInfo[0].NET_SATISH;
 
 
         $.ajax({
             url: "/Pharmacy/AddFoodSupplementItem",
             method: "GET",
-            data: { sku: selectedFoodItemRef, date: tarix, sourceIndex: anbar, quantity: fooditemCount },
+            data: { sku: selectedFoodItemRef, date: tarix, sourceIndex: anbar, quantity: fooditemCount, invDesirable: mebleg },
             success: function (res) {
                 if (res.status == 500) {
                     alert(res.responseText);
@@ -248,11 +251,12 @@
         let sourceIndex = selectedPharmacyInvoiceInfo[0].ANBAR;
         let reseptCount = document.getElementById("resept_count");
         let date = selectedPharmacyInvoiceInfo[0].TARIX;
+        let mebleg = selectedPharmacyInvoiceInfo[0].NET_SATISH;
 
         $.ajax({
             url: "/PharmacyInvoicePrint/Index",
             method: "GET",
-            data: { fakturaName: invName, anbar: sourceIndex, date: date.toLocaleDateString(), reseptCount: reseptCount.value },
+            data: { fakturaName: invName, anbar: sourceIndex, date: date.toLocaleDateString(), reseptCount: reseptCount.value, mebleg: mebleg },
             success: function (res) {
                 if (res.status == 500) {
                     Swal.fire({

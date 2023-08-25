@@ -14,6 +14,7 @@ namespace Omnitech.Models
         public string MEHSULUN_ADI { get; set; }
         public string FIRMA { get; set; }
         public string ISTEHSALCHI { get; set; }
+        public string OLKE { get; set; }
         public string BARCODE { get; set; }
         public string VAHID { get; set; }
         public int EDEDSAYI { get; set; }

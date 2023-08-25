@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@inject Service.UserManager userManager;
+
+<!DOCTYPE html>
 
 <html>
 <head>
@@ -17,13 +21,14 @@
     <link rel="stylesheet" href="~/css/vendor.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Site.css" />
     <link href="~/css/sweetalert2.css" />
-   @* <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">*@
+    <link href="~/css/main" />
+    @* <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">*@
     <script src="~/js/vendor.js" asp-append-version="true"></script>
-   @* <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    @* <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>*@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
-   
+
     <script src="~/js/sweetalert2.all.js"></script>
     <script src="~/js/sweetalert2.all.min.js"></script>
     <script src="~/js/sweetalert2.js"></script>
@@ -34,8 +39,40 @@
 
 <body style="padding-top: 5rem;">
 
+    @{
+        var settings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
+        User user = new User();
+
+        List<Submenu> submenus = new List<Submenu>();
+
+        var httpContext = ViewContext.HttpContext;
+
+        try
+        {
+            user.Username = httpContext.User.Identity.Name;
+
+            var submenuFromDb = (List<Submenu>)ViewData["Data"];
+
+            if (submenuFromDb != null)
+                submenus = submenuFromDb;
+
+            //JsonConvert.DeserializeObject<List<Submenu>>(ViewData["Data"])
+
+            // HttpContext.Session.SetString(user.Username, JsonConvert.SerializeObject(user));
+        }
+
+        catch
+        {
+            user.Username = "";
+        }
+    }
+
     <nav class="navbar navbar-dark fixed-top navbar-expand-md" style="background-color: #337ab7;">
-        <a class="navbar-brand" style="font-weight: 500;">Omnitech</a>
+        @*<a class="navbar-brand" style="font-weight: 500;">Omnitech</a>*@
 
         <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="navbar-toggler-icon"></span>
@@ -43,13 +80,27 @@
 
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav nav mr-auto">
-                <li class="nav-item"><a href="/KN/Index" class="nav-link" style="font-weight: 500;">Firma 1</a></li>
-                <li class="nav-item"><a href="/Pharmacy/Index" class="nav-link" style="font-weight: 500;">Firma 500</a></li>
-                <li class="nav-item"><a href="/ProblemicSalesLogs/Index" class="nav-link" style="font-weight: 500;">Çap olunmayan qaimələr</a></li>
+                @foreach (var submenu in submenus)
+                {
+                    <li class="nav-item"><a asp-controller="@submenu.Controller" asp-action="@submenu.Action" class="nav-link" style="font-weight: 500;color: white;font-family: Poppins-Regular,sans-serif">@submenu.Name</a></li>
+                }
             </ul>
-            <a class="closeKassa btn btn-success" id="btnCloseShift" >  Kassanı bağla </a>
+
+            @if (httpContext.User.Identity.IsAuthenticated)
+            {
+                <a class="closeKassa btn btn-success" style=" background-color: #72a1c9; border-color: #72A1CA;margin-right: 8px;">@user.Username</a>
+                <a asp-controller="Auth" asp-action="Logout" class="closeKassa btn btn-success" style=" background-color: #72a1c9; border-color: #72A1CA;margin-right: 8px;">Çıxış</a>
+                <a class="closeKassa btn btn-success" id="btnCloseShift" style=" background-color: #72a1c9; border-color: #72A1CA;">Kassanı bağla</a>
+            }
+
+            else if (!httpContext.User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="Auth" asp-action="Login" class="closeKassa btn btn-success" style=" background-color: #72a1c9; border-color: #72A1CA;">Daxil ol</a>
+            }
+
         </div>
     </nav>
+
 
 
 
@@ -57,12 +108,14 @@
         @RenderBody()
     </main>
 
-
+    @*    <footer>
+    <h4>
+    @user.Username
+    </h4>
+    </footer>*@
 
 
 </body>
-
-
 <script>
     $(document).ready(function () {
         var url = window.location.href;
@@ -76,11 +129,11 @@
 
     function CloseShift() {
 
-      
+
 
         $.ajax({
             url: "/Home/CloseShift",
-            method: "GET",   
+            method: "GET",
             success: function (res) {
                 if (res.status == 500) {
                     Swal.fire({
@@ -106,10 +159,6 @@
         });
     }
 </script>
-
-
-
-
 
 
 </html>

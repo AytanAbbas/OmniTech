@@ -33,14 +33,14 @@ namespace Omnitech.Service
             }
         }
 
-        public async Task PrintAsync(string fakturaName, OmnitechLoginResponse loginResponse)
+        public async Task PrintAsync(string fakturaName, OmnitechLoginResponse loginResponse, string url)
         {
             DateTime now = DateTime.Now;
             try
             {
                 List<SalesLogs> salesLogsList = await _salesLogsRepository.GetSalesLogsByFakturaNameAsync(fakturaName);
 
-                OmnitechShiftResponse omnitechShiftResponse = await OmnitechPrintService.CheckShiftAsync(loginResponse);
+                OmnitechShiftResponse omnitechShiftResponse = await OmnitechPrintService.CheckShiftAsync(loginResponse, url);
                
 
                 foreach (var salesLogs in salesLogsList)
@@ -48,7 +48,7 @@ namespace Omnitech.Service
                     try
                     {
                         if (string.IsNullOrEmpty(salesLogs.RESPONSE_TPS575))
-                            await PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse);
+                            await PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse, url);
                     }
 
                     catch (Exception exp)
@@ -83,7 +83,7 @@ namespace Omnitech.Service
 
         }
 
-        public async Task PrintSingleAsync(SalesLogs salesLogs, OmnitechLoginResponse loginResponse, OmnitechShiftResponse omnitechShiftResponse)
+        public async Task PrintSingleAsync(SalesLogs salesLogs, OmnitechLoginResponse loginResponse, OmnitechShiftResponse omnitechShiftResponse,string url)
         {
             SalesLogs salesLogsFromDb = await _salesLogsRepository.GetSalesLogsByRecnoAsync(salesLogs.RECNO);
 
@@ -100,7 +100,7 @@ namespace Omnitech.Service
 
             if (!omnitechShiftResponse.shiftStatus)
             {
-                omnitechOpenShiftResponse = await OmnitechPrintService.OpenShiftAsync(loginResponse);
+                omnitechOpenShiftResponse = await OmnitechPrintService.OpenShiftAsync(loginResponse, url);
 
                 Tps575Logs tps575Logs = new Tps575Logs
                 {
@@ -114,7 +114,7 @@ namespace Omnitech.Service
             }
 
 
-            string responseText = await OmnitechPrintService.InvokeAsync(salesLogs.REQUEST_TPS575);
+            string responseText = await OmnitechPrintService.InvokeAsync(salesLogs.REQUEST_TPS575,url);
 
             OmnitechSaleResponse omnitechSaleResponse = System.Text.Json.JsonSerializer.Deserialize<OmnitechSaleResponse>(responseText);
 
@@ -141,7 +141,7 @@ namespace Omnitech.Service
             return await _salesLogsRepository.GetProblemicSalesLogsForPrintAsync();
         }
 
-        public async Task PrintProblemicSalesLogsByRecnoAsync(int recno)
+        public async Task PrintProblemicSalesLogsByRecnoAsync(int recno,string url)
         {
             SalesLogs salesLogs = null;
             try
@@ -156,21 +156,21 @@ namespace Omnitech.Service
 
                     if (omnitechSaleResponse.code != 0)
                     {
-                        OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login();
+                        OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login(url);
 
-                        OmnitechShiftResponse omnitechShiftResponse = await OmnitechPrintService.CheckShiftAsync(loginResponse);
+                        OmnitechShiftResponse omnitechShiftResponse = await OmnitechPrintService.CheckShiftAsync(loginResponse, url);
 
-                        await PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse);
+                        await PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse,url);
                     }
                 }
 
                 else
                 {
-                    OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login();
+                    OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login(url);
 
-                    OmnitechShiftResponse omnitechShiftResponse = await OmnitechPrintService.CheckShiftAsync(loginResponse);
+                    OmnitechShiftResponse omnitechShiftResponse = await OmnitechPrintService.CheckShiftAsync(loginResponse,url);
 
-                    await PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse);
+                    await PrintSingleAsync(salesLogs, loginResponse, omnitechShiftResponse, url);
                 }
 
             }

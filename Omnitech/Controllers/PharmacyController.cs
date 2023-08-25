@@ -9,15 +9,17 @@ using System.Threading.Tasks;
 
 namespace Omnitech.Controllers
 {
-    public class PharmacyController : Controller
+    public class PharmacyController : BaseController
     {
         private readonly PharmacyInvoiceService _pharmacyInvoiceService;
         private readonly Tps575UrlService _tps575UrlService;
+        private readonly UserMenuManager _userMenuManager;
 
-        public PharmacyController(PharmacyInvoiceService pharmacyInvoiceService, Tps575UrlService tps575UrlService)
+        public PharmacyController(PharmacyInvoiceService pharmacyInvoiceService, Tps575UrlService tps575UrlService, UserMenuManager userMenuManager) : base(userMenuManager)
         {
             _pharmacyInvoiceService = pharmacyInvoiceService;
             _tps575UrlService = tps575UrlService;
+            _userMenuManager = userMenuManager;
         }
 
         public async Task<IActionResult> Index()
@@ -32,7 +34,7 @@ namespace Omnitech.Controllers
 
             };
 
-            return View(pharmacyInvoiceDto);
+            return CreateActionResultInstance(pharmacyInvoiceDto);
         }
 
         public async Task<IActionResult> GetByStartDateAndEndDate(DateTime startDate, DateTime endDate)
@@ -52,7 +54,7 @@ namespace Omnitech.Controllers
 
                 PharmacyInvoiceInfo pharmacyInvoiceInfo = pharmacyInvoiceDto.PharmacyInvoiceInfos.FirstOrDefault();
 
-                pharmacyInvoiceDto.PharmacyInvoiceDetails = await _pharmacyInvoiceService.GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(pharmacyInvoiceInfo.ANBAR, pharmacyInvoiceInfo.TARIX);
+                pharmacyInvoiceDto.PharmacyInvoiceDetails = await _pharmacyInvoiceService.GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(pharmacyInvoiceInfo.ANBAR, pharmacyInvoiceInfo.TARIX, pharmacyInvoiceInfo.NET_SATISH);
                 return PartialView("_PharmacyInvoiceInfoPartial", pharmacyInvoiceDto);
             }
 
@@ -64,7 +66,7 @@ namespace Omnitech.Controllers
             }
         }
 
-        public async Task<IActionResult> GetPharmacyInvoiceDetailsBySourceIndexAndDate(int sourceIndex, DateTime date)
+        public async Task<IActionResult> GetPharmacyInvoiceDetailsBySourceIndexAndDate(int sourceIndex, DateTime date, double invDesirable)
         {
             try
             {
@@ -78,7 +80,7 @@ namespace Omnitech.Controllers
 
                 PharmacyInvoiceDto pharmacyInvoiceDto = new PharmacyInvoiceDto
                 {
-                    PharmacyInvoiceDetails = await _pharmacyInvoiceService.GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(sourceIndex, date),
+                    PharmacyInvoiceDetails = await _pharmacyInvoiceService.GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(sourceIndex, date, invDesirable),
                 };
 
                 return PartialView("_PharmacyInvoiceDetailPartial", pharmacyInvoiceDto);
@@ -87,7 +89,7 @@ namespace Omnitech.Controllers
             catch (Exception exp)
             {
                 return Json(new { responseText = exp.Message, status = 500 });
-               
+
             }
         }
 
@@ -142,7 +144,7 @@ namespace Omnitech.Controllers
             }
         }
 
-        public async Task<IActionResult> AddFoodSupplementItem(int sku, DateTime date, int sourceIndex, double quantity)
+        public async Task<IActionResult> AddFoodSupplementItem(int sku, DateTime date, int sourceIndex, double invDesirable, double quantity)
         {
             try
             {
@@ -161,13 +163,16 @@ namespace Omnitech.Controllers
                 if (quantity == 0)
 
                     throw new Exception("mal sayi daxil edilmeyib");
+                if (invDesirable == 0)
+
+                    throw new Exception("anbar secilmeyib");
 
 
                 await _pharmacyInvoiceService.AddFoodSupplementItemAsync(sku, date, sourceIndex, quantity);
 
                 PharmacyInvoiceDto pharmacyInvoiceDto = new PharmacyInvoiceDto
                 {
-                    PharmacyInvoiceDetails = await _pharmacyInvoiceService.GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(sourceIndex, date),
+                    PharmacyInvoiceDetails = await _pharmacyInvoiceService.GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(sourceIndex, date, invDesirable)
                 };
 
                 return PartialView("_PharmacyInvoiceDetailPartial", pharmacyInvoiceDto);

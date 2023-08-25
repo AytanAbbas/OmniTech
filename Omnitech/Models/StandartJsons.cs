@@ -14,7 +14,7 @@
                     ""password"":""123""
                     }
                     }";
-            }
+            }//Kassir 1     //SuperApi 123
         }
      
         public static string OpenShiftJson(OmnitechLoginResponse omnitechLoginResponse)

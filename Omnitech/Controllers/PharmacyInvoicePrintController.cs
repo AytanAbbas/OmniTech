@@ -20,7 +20,7 @@ namespace Omnitech.Controllers
             _tps575UrlService = tps575UrlService;
         }
 
-        public async Task<IActionResult> Index(string fakturaName, int anbar, DateTime date, int reseptCount)
+        public async Task<IActionResult> Index(string fakturaName, int anbar, DateTime date, int reseptCount, double mebleg)
         {
             try
             {
@@ -36,8 +36,20 @@ namespace Omnitech.Controllers
                 if (reseptCount == 0)
                     throw new Exception("setir sayi daxil edilmeyib");
 
+                if (mebleg == 0)
+                    throw new Exception("mebleg  daxil edilmeyib");
 
-                string result = await _pharmacyInvoicePrintService.SendKassaAsync(anbar, date, fakturaName, reseptCount);
+                string username = HttpContext.User.Identity.Name;
+
+                if (string.IsNullOrEmpty(username))
+                    throw new Exception($"Not authorized");
+
+                Tps575Url tpsUrl = await _tps575UrlService.GetUrlByUsernameAsync(username);
+
+                if (tpsUrl == null || tpsUrl == default || string.IsNullOrEmpty(tpsUrl.URL))
+                    throw new Exception("Url not found!");
+
+                string result = await _pharmacyInvoicePrintService.SendKassaAsync(anbar, date, fakturaName, reseptCount,mebleg, tpsUrl.URL);
 
                 if(!result.Equals("SUCCESS"))
                     throw new Exception(result);

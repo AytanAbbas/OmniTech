@@ -9,6 +9,7 @@ using OpenXmlPowerTools;
 using static Omnitech.Utilities.Enums;
 using System.Net;
 using Omnitech.Utilities;
+using System.Security.Policy;
 
 namespace Omnitech.Service
 {
@@ -30,17 +31,16 @@ namespace Omnitech.Service
             _tps575LogsRepository = tps575LogsRepository;
         }
 
-        public async Task<string> SendKassaAsync(int invId, double mebleg, string faktura)
+        public async Task<string> SendKassaAsync(int invId, double mebleg, string faktura,string url)
         {
             string result = "SUCCESS";
             try
             {
-                if (Enums.Tps575Url == null)
+                if (string.IsNullOrEmpty(url))
                     throw new Exception("Url is empty");
                
-                string url = Enums.Tps575Url.URL;
 
-                OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login();
+                OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login(url);
 
                 Tps575Logs tps575Logs = new Tps575Logs
                 {
@@ -54,7 +54,7 @@ namespace Omnitech.Service
 
                 await _salesLogsRepository.SendKassaAsync(invId, mebleg, loginResponse.access_token, url, faktura);
 
-                await _printService.PrintAsync(faktura, loginResponse);
+                await _printService.PrintAsync(faktura, loginResponse, url);
             }
 
             catch (Exception exp)

@@ -11,5 +11,7 @@ namespace Omnitech.Utilities
         }
 
         public static Tps575Url Tps575Url { get; set; } = null;
+        public static Tps575Url Tps575UserUrl { get; set; } = null;
+
     }
 }

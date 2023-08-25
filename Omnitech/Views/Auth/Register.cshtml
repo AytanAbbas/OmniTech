@@ -1,0 +1,112 @@
+﻿@model UserForRegisterDto
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Register</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/png" href="~/images/icons/favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="~vendor/bootstrap/css/bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="~/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-xVVam1KS4+Qt2OrFa+VdRUoXygyKIuNWUUUBZYv+n27STsJ7oDOHJgfF0bNKLMJF" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/vendor/animate/animate.css">
+
+    <link rel="stylesheet" type="text/css" href="~/vendor/css-hamburgers/hamburgers.min.css">
+
+    <link rel="stylesheet" type="text/css" href="~/vendor/select2/select2.min.css">
+
+    <link rel="stylesheet" type="text/css" href="~/css/util.css">
+    <link rel="stylesheet" type="text/css" href="~/css/main.css">
+
+</head>
+<body>
+    <div class="container-login100">
+        <div class="wrap-login100" style=" padding: 24px 130px 33px 95px;">
+            <div class="login100-pic js-tilt" data-tilt="" style="will-change: transform; transform: perspective(300px) rotateX(0deg) rotateY(0deg); ">
+                <img src="~/images/login.png" alt="IMG" style=" position: relative;">
+            </div>
+            <form class="login100-form validate-form" asp-controller="Auth" asp-action="Register" method="post">
+                <span class="login100-form-title" style="padding: 20px;">
+                    QEYDİYYAT
+                </span>
+                <div class="wrap-input100 validate-input" data-validate="Ad yanlışdır">
+                    <input class="input100" type="text" placeholder="Ad" asp-for="@Model.FirstName">
+                    <span class="focus-input100" asp-validation-for="@Model.FirstName"></span>
+                    <span class="symbol-input100"><i class="fas fa-user-alt" aria-hidden="true"></i></span>
+
+                </div>
+                <div class="wrap-input100 validate-input" data-validate="Soyad yanlışdır">
+                    <input class="input100" type="text" placeholder="Soyad" asp-for="@Model.LastName">
+                    <span class="focus-input100" asp-validation-for="@Model.LastName"></span>
+                    <span class="symbol-input100"><i class="fas fa-user-alt" aria-hidden="true"></i></span>
+
+                </div>
+                <div class="wrap-input100 validate-input" data-validate="Username yanlışdır">
+                    <input class="input100" type="text" placeholder="Username" asp-for="@Model.Username">
+                    <span class="focus-input100" asp-validation-for="@Model.Username"></span>
+                    <span class="symbol-input100"><i class="fa fa-envelope" aria-hidden="true"></i></span>
+                </div>
+                <div class="wrap-input100 validate-input" data-validate="Şifrə yanlışdır">
+                    <input class="input100" type="password" placeholder="Şifrə" asp-for="@Model.Password">
+                    <span class="focus-input100" asp-validation-for="@Model.Password"></span>
+                    <span class="symbol-input100"><i class="fa fa-lock" aria-hidden="true"></i> </span>
+                </div>
+                <div class="container-login100-form-btn">
+                    <button type="submit" class="login100-form-btn">Hesab yarat</button>
+                </div>
+                @*   <div class="text-center p-t-12" style="padding-top: 12px;text-align: center!important;">
+                <span class="txt1" style=" font-size: 15px !important;"> Forgot </span> <a class="txt2" href="#" style=" font-size: 15px !important;text-decoration: none !important;"> Username / Password? </a>
+                </div>*@
+                <div class="text-center p-t-136" style="text-align: center!important;">
+                    @*                    <a class="txt2" style=" font-size: 15px !important;text-decoration: none !important;" href="#">Create your Account<i class="fa fa-long-arrow-right m-l-5" style="margin-left: 5px;" aria-hidden="true"></i></a>
+                    *@
+                </div>
+            </form>
+           
+            <div class="text-center" style="text-align: center; position: relative;left: 71%;top: 12px;">
+               @* <a class="small" href="forgot-password.html" style="text-decoration: none;">Şifrəni unutmusan?</a>
+                <br />*@
+                <a class="small" asp-controller="Auth" asp-action="Login" style="text-decoration: none;">Hesabınız var? Daxil olun! <i class="fa fa-long-arrow-right m-l-5" style="margin-left: 5px;" aria-hidden="true"></i></a>
+            </div>
+         
+        </div>
+    </div>
+
+
+    <script src="~/vendor/jquery/jquery-3.2.1.min.js"></script>
+
+    <script src="~/vendor/bootstrap/js/popper.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="~/vendor/select2/select2.min.js"></script>
+
+    <script src="~/vendor/tilt/tilt.jquery.min.js"></script>
+    <script>
+        $('.js-tilt').tilt({
+            scale: 1.1
+        })
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-23581568-13');
+    </script>
+
+    <script src="~/js/main.js"></script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v52afc6f149f6479b8c77fa569edb01181681764108816" integrity="sha512-jGCTpDpBAYDGNYR5ztKt4BQPGef1P0giN6ZGVUi835kFF88FOmmn8jBQWNgrNd8g/Yu421NdgWhwQoaOPFflDw==" data-cf-beacon='{"rayId":"7c17acfc2acd37dd","token":"cd0b4b3a733644fc843ef0b185f98241","version":"2023.4.0","si":100}' crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/85735e67ff.js" crossorigin="anonymous"></script>
+</body>
+</html>

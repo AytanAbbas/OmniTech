@@ -12,15 +12,16 @@ using System.Threading.Tasks;
 
 namespace Omnitech.Controllers
 {
-    public class KNController : Controller
+    public class KNController : BaseController
     {
         private readonly KNInvoiceService _kNInvoiceService;
         private readonly Tps575UrlService _tps575UrlService;
-
-        public KNController(KNInvoiceService kNInvoiceService, Tps575UrlService tps575UrlService)
+        private readonly UserMenuManager _userMenuManager;
+        public KNController(KNInvoiceService kNInvoiceService, Tps575UrlService tps575UrlService, UserMenuManager userMenuManager) : base(userMenuManager)
         {
             _kNInvoiceService = kNInvoiceService;
             _tps575UrlService = tps575UrlService;
+            _userMenuManager = userMenuManager;
         }
 
         public async Task<IActionResult> Index()
@@ -34,7 +35,7 @@ namespace Omnitech.Controllers
 
             };
 
-            return View(knInvoiceDto);
+            return CreateActionResultInstance(knInvoiceDto);
         }
 
         public async Task<IActionResult> GetByStartDateAndEndDate(DateTime startDate, DateTime endDate)

@@ -1,20 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project\\Omnitech\\Omnitech\\Omnitech.csproj": {}
+    "D:\\Omnitech\\Omnitech\\Omnitech.csproj": {}
   },
   "projects": {
-    "D:\\Project\\Omnitech\\Omnitech\\Omnitech.csproj": {
+    "D:\\Omnitech\\Omnitech\\Omnitech.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project\\Omnitech\\Omnitech\\Omnitech.csproj",
+        "projectUniqueName": "D:\\Omnitech\\Omnitech\\Omnitech.csproj",
         "projectName": "Omnitech",
-        "projectPath": "D:\\Project\\Omnitech\\Omnitech\\Omnitech.csproj",
+        "projectPath": "D:\\Omnitech\\Omnitech\\Omnitech.csproj",
         "packagesPath": "C:\\Users\\aytanab\\.nuget\\packages\\",
-        "outputPath": "D:\\Project\\Omnitech\\Omnitech\\obj\\",
+        "outputPath": "D:\\Omnitech\\Omnitech\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "D:\\Project\\Omnitech\\NuGet.Config",
+          "D:\\Omnitech\\NuGet.Config",
           "C:\\Users\\aytanab\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -24,6 +27,7 @@
         "sources": {
           "C:\\Program Files (x86)\\DevExpress 20.2\\DevExtreme\\System\\DevExtreme\\Bin\\AspNetCore": {},
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\sdk\\7.0.302\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -53,6 +57,28 @@
             "DevExtreme.AspNet.Data": {
               "target": "Package",
               "version": "[2.7.1, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[3.1.32, )"
+            },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[7.0.10, )"
+            },
+            "Microsoft.AspNetCore.Session": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[3.1.32, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.1.32, )"
             },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
@@ -94,7 +120,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     }

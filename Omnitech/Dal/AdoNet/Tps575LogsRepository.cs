@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
-using System.Data;
-using System.Threading.Tasks;
-using System;
-using Omnitech.Models;
-using System.Collections.Generic;
 using Omnitech.Dal.AdoNet.Queries;
+using Omnitech.Models;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace Omnitech.Dal.AdoNet
 {

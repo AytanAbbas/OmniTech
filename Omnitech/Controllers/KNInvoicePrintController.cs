@@ -17,6 +17,7 @@ namespace Omnitech.Controllers
         private readonly KNInvoiceService _kNInvoiceService;
         private readonly Tps575UrlService _tps575UrlService;
 
+
         public KNInvoicePrintController(KNInvoicePrintService knInvoicePrintService, PrintTimerService printTimerService, KNInvoiceService kNInvoiceService, Tps575UrlService tps575UrlService)
         {
             _knInvoicePrintService = knInvoicePrintService;
@@ -42,7 +43,17 @@ namespace Omnitech.Controllers
                 if (string.IsNullOrEmpty(faktura))
                     throw new Exception("Faktura secilmeyib");
 
-                string result = await _knInvoicePrintService.SendKassaAsync(invId, mebleg, faktura);
+                string username = HttpContext.User.Identity.Name;
+
+                if (string.IsNullOrEmpty(username))
+                    throw new Exception($"Not authorized");
+
+                Tps575Url tpsUrl = await _tps575UrlService.GetUrlByUsernameAsync(username);
+
+                if (tpsUrl == null || tpsUrl == default || string.IsNullOrEmpty(tpsUrl.URL))
+                    throw new Exception("Url not found!");
+
+                string result = await _knInvoicePrintService.SendKassaAsync(invId, mebleg, faktura, tpsUrl.URL);
 
 
                 if (!result.Equals("SUCCESS"))
@@ -62,7 +73,7 @@ namespace Omnitech.Controllers
             {
                 ViewBag.Message = exp.Message;
 
-                 return Json(new { responseText = exp.Message, status = 500 });
+                return Json(new { responseText = exp.Message, status = 500 });
             }
 
         }

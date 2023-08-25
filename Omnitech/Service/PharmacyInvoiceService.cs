@@ -22,9 +22,9 @@ namespace Omnitech.Service
             return pharmacyInvoiceInfos;
         }
 
-        public async Task<List<PharmacyInvoiceDetail>> GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(int sourceIndex, DateTime date)
+        public async Task<List<PharmacyInvoiceDetail>> GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(int sourceIndex, DateTime date,double invDesirable)
         {
-            List<PharmacyInvoiceDetail> pharmacyInvoiceDetails= await _pharmacyInvoiceRepository.GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(sourceIndex, date);
+            List<PharmacyInvoiceDetail> pharmacyInvoiceDetails= await _pharmacyInvoiceRepository.GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(sourceIndex, date,invDesirable);
 
             return pharmacyInvoiceDetails;
         }
@@ -34,10 +34,10 @@ namespace Omnitech.Service
             return await _pharmacyInvoiceRepository.GetAllFoodSuppLementItemsAsync();
         }
 
-        public async Task AddFoodSupplementItemAsync(int sku, DateTime date, int sourceIndex, double quantity)
+        public async Task AddFoodSupplementItemAsync(int sku, DateTime date, int sourceIndex,double quantity)
         {
             double price = await _pharmacyInvoiceRepository.GetFoodSupplementItemPriceByItemRefAsync(sku);
-            await _pharmacyInvoiceRepository.AddFoodSupplementItemAsync(sku, date, sourceIndex, quantity, price);
+            await _pharmacyInvoiceRepository.AddFoodSupplementItemAsync(sku, date, sourceIndex,price, quantity);
         }
 
         public async Task<PharmacyInvoiceItemReplaceResponse> GetPharmacyInvoiceItemReplaceResponseByDateAndSourceIndex( int sourceIndex, DateTime datetime)
@@ -57,6 +57,11 @@ namespace Omnitech.Service
         public async Task DeletePharmacyInvoiceDetailLine(int logicalref)
         {
             await _pharmacyInvoiceRepository.DeletePharmacyInvoiceDetailLine(logicalref);
+        }
+
+        internal Task<List<PharmacyInvoiceDetail>> GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(int sourceIndex, DateTime date, object invDesirable)
+        {
+            throw new NotImplementedException();
         }
     }
 }

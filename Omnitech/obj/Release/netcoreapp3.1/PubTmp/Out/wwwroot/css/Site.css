@@ -98,11 +98,8 @@
     text-align: center;
     line-height: 3;
 }
-#totalSum {
-    position: relative;
-    top: 16%;
-    left: 190%;
-}
+
+
 .swal2-confirm {
     background-color: #337ab7 !important;
     border-color: #337ab7 !important;

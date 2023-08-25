@@ -16,12 +16,12 @@ namespace Omnitech.Dal.AdoNet
             _connectionStrIntegrlo = configuration["ConnectionStrings:IntegrloConnection"];
         }
 
-        public async Task SendKassaAsync(int anbar, DateTime tarix, string accessToken, string url, string faktura, int chekSayi)
+        public async Task SendKassaAsync(int anbar, DateTime tarix, string accessToken, string url, string faktura, int chekSayi,double mebleg)
         {
             using (SqlConnection connection = new SqlConnection(_connectionStrIntegrlo))
             {
                 connection.Open();
-                using (SqlCommand sqlCommand = new SqlCommand("TPS575_SEND_KASSA", connection))
+                using (SqlCommand sqlCommand = new SqlCommand("TPS575_SEND_KASSA_NEW", connection))
                 {
                     sqlCommand.CommandType = CommandType.StoredProcedure;
 
@@ -55,12 +55,18 @@ namespace Omnitech.Dal.AdoNet
                     chekSayiParameter.SqlDbType = SqlDbType.Int;
                     chekSayiParameter.Value = chekSayi;
 
+                    SqlParameter meblegParameter = new SqlParameter();
+                    meblegParameter.ParameterName = "@MEBLEG";
+                    meblegParameter.SqlDbType = SqlDbType.Float;
+                    meblegParameter.Value = mebleg;
+
                     sqlCommand.Parameters.Add(anbarParameter);
                     sqlCommand.Parameters.Add(tarixParameter);
                     sqlCommand.Parameters.Add(accessTokenParameter);
                     sqlCommand.Parameters.Add(urlParameter);
                     sqlCommand.Parameters.Add(fakturaParameter);
                     sqlCommand.Parameters.Add(chekSayiParameter);
+                    sqlCommand.Parameters.Add(meblegParameter);
 
                     await sqlCommand.ExecuteNonQueryAsync();
 

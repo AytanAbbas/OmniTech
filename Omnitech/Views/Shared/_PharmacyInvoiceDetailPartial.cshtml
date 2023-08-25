@@ -10,6 +10,7 @@ Html.DevExtreme().DataGrid<PharmacyInvoiceDetail>()
     .DataSource(Model.PharmacyInvoiceDetails)
     .HoverStateEnabled(true)
     .ShowBorders(true)
+
     .Columns(columns =>
         {
             columns.AddFor(m => m.LOGICALREF).HeaderCellTemplate("LOGICALREF");
@@ -25,7 +26,7 @@ Html.DevExtreme().DataGrid<PharmacyInvoiceDetail>()
             columns.AddFor(m => m.VAHID).HeaderCellTemplate("VAHID");
             columns.AddFor(m => m.EDEDSAYI).HeaderCellTemplate("EDEDSAYI");
             columns.AddFor(m => m.FIRMA).HeaderCellTemplate("FIRMA");
-            //columns.AddFor(m => m.DELETED).AllowHiding(true);
+            //columns.AddFor(m => m.DELETED);//.AllowHiding(false);
         })
     .Selection(s => s.Mode(SelectionMode.Single))
     .AllowColumnResizing(true)
@@ -49,51 +50,51 @@ Html.DevExtreme().DataGrid<PharmacyInvoiceDetail>()
 
 <script>
 
-    function changeColor() {
-        setTimeout(function () {
-            let stlineDataContainer = document.getElementById("pharmacyInvoiceDetailDataContainer");
+    //function changeColor() {
+    //    setTimeout(function () {
+    //        let stlineDataContainer = document.getElementById("pharmacyInvoiceDetailDataContainer");
 
-            var stlineTrs = stlineDataContainer.getElementsByClassName("dx-data-row");
-            let zerifeCount=0;
+    //        var stlineTrs = stlineDataContainer.getElementsByClassName("dx-data-row");
+    //        let zerifeCount=0;
 
-            for (let f of stlineTrs) {
-                let prohibitionTd = f.children[12];
-                if (prohibitionTd.innerHTML == "ZERIFE"){
-                    zerifeCount+=1;
-                    f.style.backgroundColor = "yellow";
-                }
-            }
-
-
-            if(zerifeCount >0){
-                document.getElementById("btnPrint").setAttribute('disabled', 'disabled')
-                document.getElementById("btn_add").setAttribute('disabled', 'disabled')
-            }
-            else{
-                document.getElementById("btnPrint").removeAttribute("disabled");
-                document.getElementById("btn_add").removeAttribute("disabled");
-            }
+    //        for (let f of stlineTrs) {
+    //            let prohibitionTd = f.children[12];
+    //            if (prohibitionTd.innerHTML == "ZERIFE"){
+    //                zerifeCount+=1;
+    //                f.style.backgroundColor = "yellow";
+    //            }
+    //        }
 
 
-            if (zerifeCount == 0) {
-                document.getElementById("btnReplacePharmacyInvoiceItem").setAttribute('disabled', 'disabled')
+    //        if(zerifeCount >0){
+    //            document.getElementById("btnPrint").setAttribute('disabled', 'disabled')
+    //            document.getElementById("btn_add").setAttribute('disabled', 'disabled')
+    //        }
+    //        else{
+    //            document.getElementById("btnPrint").removeAttribute("disabled");
+    //            document.getElementById("btn_add").removeAttribute("disabled");
+    //        }
+
+
+    //        if (zerifeCount == 0) {
+    //            document.getElementById("btnReplacePharmacyInvoiceItem").setAttribute('disabled', 'disabled')
                 
-            }
-            else{
-                document.getElementById("btnReplacePharmacyInvoiceItem").removeAttribute("disabled");
+    //        }
+    //        else{
+    //            document.getElementById("btnReplacePharmacyInvoiceItem").removeAttribute("disabled");
                 
-            }
-        }, 100)
-    }
+    //        }
+    //    }, 100)
+    //}
 
-
+  
 
     $(function () {
         $("#pharmacyInvoiceDetailDataContainer").dxDataGrid({
 
             editing: {
                 allowDeleting: function (e) {
-                    changeColor();
+                    //changeColor();
                     let deleted = e.row.data.DELETED;
 
                     return deleted == 3;

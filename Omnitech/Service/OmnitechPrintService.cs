@@ -11,16 +11,16 @@ namespace Omnitech.Service
 {
     public class OmnitechPrintService
     {
-        public static async Task<OmnitechLoginResponse> Login()
+        public static async Task<OmnitechLoginResponse> Login(string url)
         {
             string json = StandartJsons.LoginJson;
 
-            string responseText = await InvokeAsync(json);
+            string responseText = await InvokeAsync(json, url);
 
             return System.Text.Json.JsonSerializer.Deserialize<OmnitechLoginResponse>(responseText);
         }
 
-        public static async Task<OmnitechShiftResponse> CheckShiftAsync(OmnitechLoginResponse omnitechLoginResponse)
+        public static async Task<OmnitechShiftResponse> CheckShiftAsync(OmnitechLoginResponse omnitechLoginResponse, string url)
         {
             OmnitechRequestBase omnitechRequestBase = new OmnitechRequestBase();
 
@@ -39,21 +39,21 @@ namespace Omnitech.Service
 
             string json = System.Text.Json.JsonSerializer.Serialize(omnitechRequestBase);
 
-            string responseText = await InvokeAsync(json);
+            string responseText = await InvokeAsync(json, url);
 
             return System.Text.Json.JsonSerializer.Deserialize<OmnitechShiftResponse>(responseText);
         }
 
-        public static async Task<OmnitechOpenShiftResponse> OpenShiftAsync(OmnitechLoginResponse omnitechLoginResponse)
+        public static async Task<OmnitechOpenShiftResponse> OpenShiftAsync(OmnitechLoginResponse omnitechLoginResponse, string url)
         {
             string json = StandartJsons.OpenShiftJson(omnitechLoginResponse);
 
-            string responseText = await InvokeAsync(json);
+            string responseText = await InvokeAsync(json, url);
 
             return System.Text.Json.JsonSerializer.Deserialize<OmnitechOpenShiftResponse>(responseText);
         }
 
-        public static async Task ZReportAsync()
+        public static async Task ZReportAsync(string url)
         {
             OmnitechRequestBase omnitechRequestBase = new OmnitechRequestBase();
 
@@ -65,7 +65,7 @@ namespace Omnitech.Service
             RequestData requestData = new RequestData
             {
                 checkData = checkData,
-                access_token = Login().GetAwaiter().GetResult().access_token
+                access_token = Login(url).GetAwaiter().GetResult().access_token
             };
 
             omnitechRequestBase.requestData = requestData;
@@ -73,17 +73,17 @@ namespace Omnitech.Service
 
             string json = System.Text.Json.JsonSerializer.Serialize(omnitechRequestBase);
 
-            string responseText = await InvokeAsync(json);
+            string responseText = await InvokeAsync(json, url);
 
         }
 
-        public static async Task<string> InvokeAsync(string json)
+        public static async Task<string> InvokeAsync(string json, string url)
         {
             string responseText = "";
 
             try
             {
-                if (Enums.Tps575Url == null)
+                if (string.IsNullOrEmpty(url))
                     throw new Exception("Url is empty");
 
                 using (HttpClient httpClient = new HttpClient())
@@ -92,7 +92,7 @@ namespace Omnitech.Service
 
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await httpClient.PostAsync(Enums.Tps575Url.URL, content);
+                    var response = await httpClient.PostAsync(url, content);
 
                     if (response.IsSuccessStatusCode)
                     {

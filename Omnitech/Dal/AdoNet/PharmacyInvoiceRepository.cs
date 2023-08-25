@@ -28,7 +28,7 @@ namespace Omnitech.Dal.AdoNet
             await using (SqlConnection connection = new SqlConnection(_connectionStrIntegrlo))
             {
                 await connection.OpenAsync();
-                await using (SqlCommand sqlCommand = new SqlCommand("TPS575_GET_FAKTURALAR_FROM_TIGER", connection))
+                await using (SqlCommand sqlCommand = new SqlCommand("TPS575_GET_FAKTURALAR_FROM_TIGER_NEW", connection))
                 {
                     sqlCommand.CommandType = CommandType.StoredProcedure;
                     SqlParameter startParameter = new SqlParameter();
@@ -53,17 +53,21 @@ namespace Omnitech.Dal.AdoNet
                             TARIX = dataReader.IsDBNull(dataReader.GetOrdinal("TARIX")) ? Convert.ToDateTime("01.01.1900") : dataReader.GetDateTime(dataReader.GetOrdinal("TARIX")),
                             ANBAR = dataReader.IsDBNull(dataReader.GetOrdinal("ANBAR")) ? 0 : dataReader.GetInt32(dataReader.GetOrdinal("ANBAR")),
                             FAKTURA = dataReader.IsDBNull(dataReader.GetOrdinal("FAKTURA")) ? "" : dataReader.GetString(dataReader.GetOrdinal("FAKTURA")),
-                            SETR_SAY = dataReader.IsDBNull(dataReader.GetOrdinal("SETR_SAY")) ? 0 : dataReader.GetInt32(dataReader.GetOrdinal("SETR_SAY")),
-                            CEMI_MAL_SAYI_IADE_CIXILMIS = dataReader.IsDBNull(dataReader.GetOrdinal("CEMI_MAL_SAYI_IADE_CIXILMIS")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("CEMI_MAL_SAYI_IADE_CIXILMIS")),
-                            CEMI_MEBLEG_IADE_CIXILMIS = dataReader.IsDBNull(dataReader.GetOrdinal("CEMI_MEBLEG_IADE_CIXILMIS")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("CEMI_MEBLEG_IADE_CIXILMIS")),
-                            IADE_MEBLEG_CEMI = dataReader.IsDBNull(dataReader.GetOrdinal("IADE_MEBLEG_CEMI")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("IADE_MEBLEG_CEMI")),
-                            IADE_MEBLEG_CEMI_GUNLUK_SATISH = dataReader.IsDBNull(dataReader.GetOrdinal("IADE_MEBLEG_CEMI_GUNLUK_SATISH")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("IADE_MEBLEG_CEMI_GUNLUK_SATISH")),
-                            QADAGA_SATISH = dataReader.IsDBNull(dataReader.GetOrdinal("QADAGA_SATISH")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("QADAGA_SATISH")),
-                            QADAGA_IADE = dataReader.IsDBNull(dataReader.GetOrdinal("QADAGA_IADE")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("QADAGA_IADE")),
+                            SATISH = dataReader.IsDBNull(dataReader.GetOrdinal("SATISH")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("SATISH")),
+                            IADE = dataReader.IsDBNull(dataReader.GetOrdinal("IADE")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("IADE")),
+                            NET_SATISH = dataReader.IsDBNull(dataReader.GetOrdinal("NET_SATISH")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("NET_SATISH")),
+                            //SETR_SAY = dataReader.IsDBNull(dataReader.GetOrdinal("SETR_SAY")) ? 0 : dataReader.GetInt32(dataReader.GetOrdinal("SETR_SAY")),
+                            //CEMI_MAL_SAYI_IADE_CIXILMIS = dataReader.IsDBNull(dataReader.GetOrdinal("CEMI_MAL_SAYI_IADE_CIXILMIS")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("CEMI_MAL_SAYI_IADE_CIXILMIS")),
+                            //CEMI_MEBLEG_IADE_CIXILMIS = dataReader.IsDBNull(dataReader.GetOrdinal("CEMI_MEBLEG_IADE_CIXILMIS")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("CEMI_MEBLEG_IADE_CIXILMIS")),
+                            //IADE_MEBLEG_CEMI = dataReader.IsDBNull(dataReader.GetOrdinal("IADE_MEBLEG_CEMI")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("IADE_MEBLEG_CEMI")),
+                            //IADE_MEBLEG_CEMI_GUNLUK_SATISH = dataReader.IsDBNull(dataReader.GetOrdinal("IADE_MEBLEG_CEMI_GUNLUK_SATISH")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("IADE_MEBLEG_CEMI_GUNLUK_SATISH")),
+                            //QADAGA_SATISH = dataReader.IsDBNull(dataReader.GetOrdinal("QADAGA_SATISH")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("QADAGA_SATISH")),
+                            //QADAGA_IADE = dataReader.IsDBNull(dataReader.GetOrdinal("QADAGA_IADE")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("QADAGA_IADE")),
                             KASSA_GONDERILME = dataReader.IsDBNull(dataReader.GetOrdinal("KASSA_GONDERILME")) ? "" : dataReader.GetString(dataReader.GetOrdinal("KASSA_GONDERILME")),
                             APTEKIN_ADI = dataReader.IsDBNull(dataReader.GetOrdinal("APTEKIN_ADI")) ? "" : dataReader.GetString(dataReader.GetOrdinal("APTEKIN_ADI")),
                             fiscal = dataReader.IsDBNull(dataReader.GetOrdinal("fiscal")) ? "" : dataReader.GetString(dataReader.GetOrdinal("fiscal")),
                             mebleg_cap = dataReader.IsDBNull(dataReader.GetOrdinal("mebleg_cap")) ? 0 : dataReader.GetDouble(dataReader.GetOrdinal("mebleg_cap")),
+                            CAP_TARIXI = dataReader.IsDBNull(dataReader.GetOrdinal("TARIX")) ? Convert.ToDateTime("01.01.1900") : dataReader.GetDateTime(dataReader.GetOrdinal("TARIX")),
 
                         };
                         invoices.Add(invoice);
@@ -76,7 +80,7 @@ namespace Omnitech.Dal.AdoNet
             }
             return invoices;
         }
-        public async Task<List<PharmacyInvoiceDetail>> GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(int sourceIndex, DateTime date)
+        public async Task<List<PharmacyInvoiceDetail>> GetPharmacyInvoiceDetailsBySourceIndexAndDateAsync(int sourceIndex, DateTime date,double invDesirable)
         {
             List<PharmacyInvoiceDetail> pharmacyInvoiceDetails = new List<PharmacyInvoiceDetail>();
 
@@ -86,7 +90,7 @@ namespace Omnitech.Dal.AdoNet
                 {
                     await connection.OpenAsync();
 
-                    await using (SqlCommand sqlCommand = new SqlCommand("TPS575_GET_FAKTURA_DETAIL", connection))
+                    await using (SqlCommand sqlCommand = new SqlCommand("TPS575_GET_FAKTURA_DETAIL_NEW", connection))
                     {
                         SqlParameter anbarParameter = new SqlParameter();
                         anbarParameter.ParameterName = "@ANBAR";
@@ -99,10 +103,16 @@ namespace Omnitech.Dal.AdoNet
                         dateParameter.SqlDbType = SqlDbType.DateTime;
                         dateParameter.Value = date;
 
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        SqlParameter desirableParameter = new SqlParameter();
+                        desirableParameter.ParameterName = "@INV_DESIRABLE";
+                        desirableParameter.SqlDbType = SqlDbType.Float;
+                        desirableParameter.Value = invDesirable;
+
 
                         sqlCommand.Parameters.Add(anbarParameter);
                         sqlCommand.Parameters.Add(dateParameter);
-
+                        sqlCommand.Parameters.Add(desirableParameter);
                         SqlDataReader dataReader = await sqlCommand.ExecuteReaderAsync();
                         while (await dataReader.ReadAsync())
                         {
@@ -117,6 +127,7 @@ namespace Omnitech.Dal.AdoNet
                                 MEHSULUN_KODU = dataReader.IsDBNull(dataReader.GetOrdinal("MEHSULUN_KODU")) ? "" : dataReader.GetString(dataReader.GetOrdinal("MEHSULUN_KODU")),
                                 MEHSULUN_ADI = dataReader.IsDBNull(dataReader.GetOrdinal("MEHSULUN_ADI")) ? "" : dataReader.GetString(dataReader.GetOrdinal("MEHSULUN_ADI")),
                                 FIRMA = dataReader.IsDBNull(dataReader.GetOrdinal("FIRMA")) ? "" : dataReader.GetString(dataReader.GetOrdinal("FIRMA")),
+                                OLKE = dataReader.IsDBNull(dataReader.GetOrdinal("OLKE")) ? "" : dataReader.GetString(dataReader.GetOrdinal("OLKE")),
                                 ISTEHSALCHI = dataReader.IsDBNull(dataReader.GetOrdinal("ISTEHSALCHI")) ? "" : dataReader.GetString(dataReader.GetOrdinal("ISTEHSALCHI")),
                                 BARCODE = dataReader.IsDBNull(dataReader.GetOrdinal("BARCODE")) ? "" : dataReader.GetString(dataReader.GetOrdinal("BARCODE")),
                                 VAHID = dataReader.IsDBNull(dataReader.GetOrdinal("VAHID")) ? "" : dataReader.GetString(dataReader.GetOrdinal("VAHID")),
@@ -206,7 +217,7 @@ namespace Omnitech.Dal.AdoNet
             return price;
         }
 
-        public async Task AddFoodSupplementItemAsync(int sku, DateTime date, int sourceIndex, double quantity, double price)
+        public async Task AddFoodSupplementItemAsync(int sku, DateTime date, int sourceIndex,  double price,double quantity)
         {
             using (SqlConnection connection = new SqlConnection(_connectionStrIntegrlo))
             {

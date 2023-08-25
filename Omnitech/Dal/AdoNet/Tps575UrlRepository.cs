@@ -13,11 +13,13 @@ namespace Omnitech.Dal.AdoNet
     {
         private readonly string _connectionStrLogo;
         private readonly string _connectionStrIntegrlo;
+        private readonly string _integrlo;
 
         public Tps575UrlRepository(IConfiguration configuration)
         {
             _connectionStrLogo = configuration["ConnectionStrings:MyConnection"];
             _connectionStrIntegrlo = configuration["ConnectionStrings:IntegrloConnection"];
+            _integrlo = configuration["ConnectionStrings:Integrlo"];
         }
 
 
@@ -41,6 +43,45 @@ namespace Omnitech.Dal.AdoNet
                                  ID = dataReader.IsDBNull(dataReader.GetOrdinal("ID")) ? 0 : dataReader.GetInt32(dataReader.GetOrdinal("ID")),
                                  URL = dataReader.IsDBNull(dataReader.GetOrdinal("URL")) ? "" : dataReader.GetString(dataReader.GetOrdinal("URL")),
                                  ACTIVE = dataReader.IsDBNull(dataReader.GetOrdinal("ACTIVE")) ? 0 : dataReader.GetInt16(dataReader.GetOrdinal("ACTIVE")),
+                            };
+                        }
+
+                        await dataReader.DisposeAsync();
+                        await sqlCommand.DisposeAsync();
+                    }
+                    await connection.CloseAsync();
+                }
+            }
+            catch (Exception exp)
+            {
+                throw new Exception(exp.Message);
+            }
+
+            return tps575Url;
+        }
+
+
+
+        public async Task<Tps575Url> GetUrlByUsernameAsync(string username)
+        {
+            Tps575Url tps575Url = null;
+
+            try
+            {
+                await using (SqlConnection connection = new SqlConnection(_integrlo))
+                {
+                    await connection.OpenAsync();
+
+                    await using (SqlCommand sqlCommand = new SqlCommand(Tps575UrlQueries.GetUrlByUsernameQuery(username), connection))
+                    {
+                        SqlDataReader dataReader = await sqlCommand.ExecuteReaderAsync();
+                        while (await dataReader.ReadAsync())
+                        {
+                            tps575Url = new Tps575Url()
+                            {
+                                ID = dataReader.IsDBNull(dataReader.GetOrdinal("ID")) ? 0 : dataReader.GetInt32(dataReader.GetOrdinal("ID")),
+                                URL = dataReader.IsDBNull(dataReader.GetOrdinal("URL")) ? "" : dataReader.GetString(dataReader.GetOrdinal("URL")),
+                                ACTIVE = dataReader.IsDBNull(dataReader.GetOrdinal("ACTIVE")) ? 0 : dataReader.GetInt16(dataReader.GetOrdinal("ACTIVE")),
                             };
                         }
 

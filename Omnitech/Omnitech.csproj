@@ -8,6 +8,14 @@
     <PackageReference Include="DevExtreme.AspNet.Data" Version="2.7.1" />
     <PackageReference Include="DevExtreme.AspNet.Core" Version="20.2.6" />
     <PackageReference Include="BuildBundlerMinifier" Version="2.9.406" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.32" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.32" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.32">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
@@ -16,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Data\" />
       <Folder Include="wwwroot\fonts\font-awesome-4.7.0\css\" />
       <Folder Include="wwwroot\images\" />
       <Folder Include="wwwroot\vendor\animate\" />

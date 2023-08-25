@@ -29,17 +29,15 @@ namespace Omnitech.Service
         }
 
 
-        public async Task<string> SendKassaAsync(int anbar, DateTime tarix, string faktura, int chekSayi)
+        public async Task<string> SendKassaAsync(int anbar, DateTime tarix, string faktura, int chekSayi, double mebleg,string url)
         {
             string result = "SUCCESS";
             try
             {
-                if (Enums.Tps575Url == null)
+                if (string.IsNullOrEmpty(url))
                     throw new Exception("Url is empty");
 
-                string url = Enums.Tps575Url.URL;
-
-                OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login();
+                OmnitechLoginResponse loginResponse = await OmnitechPrintService.Login(url);
 
                 Tps575Logs tps575Logs = new Tps575Logs
                 {
@@ -57,9 +55,9 @@ namespace Omnitech.Service
                 else if(string.IsNullOrEmpty(loginResponse.access_token))
                     throw new Exception("Kassaya qosula bilmedi");
 
-                await _salesLogsRepository.SendKassaAsync(anbar, tarix, loginResponse.access_token, url, faktura, chekSayi);
+                await _salesLogsRepository.SendKassaAsync(anbar, tarix, loginResponse.access_token, url, faktura, chekSayi,mebleg);
 
-                await _printService.PrintAsync(faktura, loginResponse);
+                await _printService.PrintAsync(faktura, loginResponse, url);
             }
 
             catch (Exception exp)
